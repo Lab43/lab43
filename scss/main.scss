@@ -1,0 +1,511 @@
+/* need to test for:
+    svg
+    rgba
+    box-shadow
+
+right now, rgba is being used for borders on nav. Maybe I should swap this out for specific colors, set by js. This will help the border match the hover background, and will solve ie8 rgba support.
+
+*/
+
+@import "compass";
+
+
+
+
+// =========
+// variables
+// =========
+
+// color
+$textColor: #444;
+$subtleTextColor: #999;
+$linkColor: #dcc154;
+$textOverThemeColor: #fff;
+$pageBackground: #fff;
+$lineColor: #ddd;
+$lineColorHover: darken($lineColor, 3%);
+$fieldFocusColor: #51cbee;
+
+// layout
+$pageWidth: 800px;
+$navHeight: 2em;
+$mobileBreak: 600px;
+
+// screenshot frames
+$frame-border: $lineColor;
+$frame-border-hover: $lineColorHover;
+$frame-background: #fff;
+$frame-background-hover: darken($frame-background, 3%);
+
+// fonts
+%serif {
+  font-family: "jaf-lapture", serif;
+}
+%sans {
+  font-family: "jaf-bernina-sans", sans-serif;
+}
+
+
+
+
+// =====
+// reset
+// =====
+
+body, h1, h2, p, ul, li {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+img {
+  vertical-align: bottom;
+}
+figure {
+  margin: 0;
+}
+
+
+
+
+// ==========
+// typography
+// ==========
+
+html {
+  font-size: 13px;
+  @extend %serif;
+  line-height: 1.5;
+  color: $textColor;
+  @media (min-width: $mobileBreak) { font-size: 16px }
+  @media (min-width: 800px) { font-size: 18px }
+  @media (min-width: 920px) { font-size: 24px }
+}
+
+body,
+input,
+button,
+textarea {
+  font-size: 1em;
+}
+a {
+  text-decoration: none;
+}
+
+h1, h2, h3 {
+  @extend %sans;
+}
+
+h2 {
+  font-size: 2.5em;
+  line-height: 1;
+}
+
+h3 {
+  font-size: 1.5em;
+  margin: 0.7em 0 0.2em;
+}
+
+
+
+
+// ======
+// layout
+// ======
+
+@mixin pageWidth {
+  margin: 0 1.5em;
+  @media (min-width: $mobileBreak) {
+    margin: 0 5%;
+  }
+  @media (min-width: 1100px ) {
+    width: 1000px;
+    margin: 0 auto;
+  }
+}
+
+* {
+  @include box-sizing(border-box);
+}
+html, body {
+  height: 100%;
+}
+img, svg {
+  width: 100%;
+}
+
+#page {
+  position: relative;
+  top: 4em;
+  @media (min-width: $mobileBreak)  {
+    z-index: 1;
+    top: 100%;
+    background: $pageBackground;
+    border-top-width: 1px;
+    border-top-style: solid;
+    //@include box-shadow(0 -1px 0 rgba(0, 0, 0, 0.1));
+    padding: 1px 0; // force child margin containment
+    margin-bottom: 2em;
+  }
+}
+section {
+  padding: 6em 0 3em;
+  @include pageWidth;
+   + section {
+    border-top: 1px solid $lineColor;
+  }
+}
+footer {
+  border-top: 1px solid $lineColor;
+  @include pageWidth;
+  padding: 0.5em 0 2em;
+}
+
+
+
+
+// ===
+// nav
+// ===
+
+#nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  font-size: 2em;
+  //border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  padding: 0.5em 0.75em;
+  z-index: 2;
+  @extend %sans;
+  a {
+    color: $textOverThemeColor;
+  }
+  ul {
+    display: none;
+    line-height: 1.6;
+    padding-top: 1.4em;
+  }
+  .top {
+    display: block;
+    height: 1.5em;
+    width: 5.5em;
+    @include hide-text;
+    // we can't use background shorthand because color is being set by js
+    background-image: url(../img/logo.svg);
+    background-position: left center;
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+  .toggle {
+    display: block;
+    background: none;
+    @include border-radius(0);
+    padding: 0;
+    @include hide-text;
+    position: absolute;
+    top: 0.7em;
+    right: 0.75em;
+    height: 1.1em;
+    width: 1.2em;
+    border: 4px solid #fff;
+    border-left: none;
+    border-right: none;
+    &:after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      background: #fff;
+      height: 4px;
+      margin-top: -2px;
+    }
+  }
+
+  @media (min-width: $mobileBreak)  {
+    //text-transform: uppercase;
+    z-index: 2;
+    height: $navHeight;
+    padding: 0;
+    font-size: 1em;
+    .toggle {
+      display: none;
+    }
+    .top {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 7em;
+      background-size: 55%;
+      background-position: center;
+      //border-left: 1px solid rgba(0, 0, 0, 0.1);
+      border-left-width: 1px;
+      border-left-style: solid;
+      /*&:hover {
+        border-left: 1px solid rgba(0, 0, 0, 0);
+        border-right: none;
+      }*/
+      border-right: none;
+    }
+    .inner {
+      @include pageWidth;
+      height: 100%;
+      position: relative;
+    }
+    ul {
+      /* If the mobile version of the menu has been opened
+         and closed, there will have been a display:none
+         added as an inline style by jQuery. That must be
+         overridden with !important if we now want to show
+         the full version of the menu. */
+      display: block !important;
+      position: relative;
+      z-index: 1;
+      padding: 0;
+      height: 100%;
+      @include transition(margin-left 0.6s);
+      border-left-width: 1px;
+      border-left-style: solid;
+    }
+    li {
+      float: left;
+      height: 100%;
+    }
+    a {
+      display: block;
+      padding: 0 1.5em;
+      height: 100%;
+      line-height: $navHeight;
+      //border-right: 1px solid rgba(0, 0, 0, 0.1);
+      border-right-width: 1px;
+      border-right-style: solid;
+      /*&:hover {
+        //background-color: rgba(0, 0, 0, 0.1);
+        border-right: 1px solid rgba(0, 0, 0, 0);
+      }*/
+    }
+    &.show-top-link {
+      ul {
+        margin-left: 7em;
+      }
+    }
+  }
+}
+
+
+
+
+// ========
+// masthead
+// ========
+
+#masthead {
+  display: none;
+  @media (min-width: $mobileBreak)  {
+    display: block;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    h1 {
+      position: absolute;
+      bottom: 0;
+      top: $navHeight / 2;
+      left: 0;
+      right: 0;
+      @include hide-text;
+      @include pageWidth;
+      background: url(../img/logo.svg) no-repeat center;
+      background-size: contain;
+    }
+  }
+}
+
+
+
+
+// =============
+// about section
+// =============
+
+#about {
+  font-size: 2.2em;
+  padding: 3em 0;
+}
+
+
+
+
+// ================
+// projects section
+// ================
+
+#projects {
+  article {
+    margin-top: 4em;
+    @media (min-width: 480px) {
+      @include clearfix;
+      figure {
+        width: 47%;
+      }
+      &:nth-child(2n) {
+        figure {
+          margin-right: 6%;
+          float: left;
+        }
+      }
+      &:nth-child(2n+1) {
+        figure {
+          margin-left: 6%;
+          float: right;
+        }
+      }
+    }
+  }
+  .view {
+    margin-top: 1em;
+    &:after {
+      content: ' \2192';
+      color: $lineColor;
+    }
+    &:hover:after {
+      color: $lineColorHover;
+    }
+  }
+}
+
+
+
+
+// ===========
+// screenshots
+// ===========
+
+.frame {
+  display: inline-block;
+  position: relative;
+  margin: 0;
+  background: $frame-background;
+  border: 1px solid $frame-border;
+  @include border-radius(4px);
+
+  // circles
+  &:before, &:after {
+    content: '';
+    display: block;
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    left: 8px;
+    top: 12px;
+    background: $frame-background;
+    border: 1px solid $frame-border;
+    @include border-radius(50%);
+  }
+  &:after {
+    left: 32px;
+  }
+
+  // hover states
+  &:hover {
+    // only change background on figure
+    background-color: $frame-background-hover;
+    // change border on everything
+    &, &:before, &:after, a:before, img {
+      border-color: $frame-border-hover;
+    }
+  }
+
+  a {
+    display: block;
+    padding: 43px 8px 10px;
+    position: relative;
+    // prevent circles from covering clickable area
+    z-index: 1;
+
+    // url bar
+    &:before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 10px;
+      right: 8px;
+      left: 66px;
+      height: 22px;
+      background: $frame-background;
+      border: 1px solid $frame-border;
+      @include border-radius(2px);
+    }
+  }
+
+  img {
+    border: 1px solid $frame-border;
+  }
+
+}
+
+
+
+
+// ============
+// contact form
+// ============
+
+form {
+  margin-top: 2em;
+}
+
+input[type=text],
+input[type=email],
+textarea {
+  display: block;
+  color: $textColor;
+  font-size: 1em;
+  border: 1px solid $lineColor;
+  @include border-radius(4px);
+  width: 100%;
+  max-width: 24em;
+  padding: 0.4em 0.6em;
+  @include box-shadow(inset 0 1px 0 #eee);
+  background: #fff;
+  outline: none;
+  &:focus {
+    @include box-shadow(0 0 5px $fieldFocusColor);
+    border: 1px solid $fieldFocusColor;
+  }
+}
+
+input, textarea {
+  margin-bottom: 1em;
+}
+
+button {
+  width: auto;
+  font-weight: bold;
+  @include border-radius(5px);
+  color: $textOverThemeColor;
+  padding: 0.4em 1em;
+  cursor: pointer;
+  border: none;
+}
+
+.hidden-fields {
+  display: none;
+}
+
+
+
+
+// ======
+// footer
+// ======
+footer {
+  color: $subtleTextColor;
+  small {
+    font-size: 1em;
+  }
+}
