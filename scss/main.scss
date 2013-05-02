@@ -134,10 +134,12 @@ img, svg {
 }
 
 #page {
-  position: relative;
-  top: 4em;
+  margin-top: 4em;
   @media (min-width: $mobileBreak)  {
     z-index: 1;
+    // see readme for positioning issues in iOS
+    margin-top: 0;
+    position: relative;
     top: 100%;
     background: $pageBackground;
     border-top-width: 1px;

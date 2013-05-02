@@ -61,6 +61,7 @@ function updateThemeColor(hue) {
     }
   });
 
+  // fixes iOS positioning issues. See readme
   $(window).resize(function () {
     $('#page').css('top', $(window).height());
   });

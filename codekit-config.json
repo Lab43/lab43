@@ -2,6 +2,17 @@
   "CodeKitInfo" : "This is a CodeKit project configuration file. It is designed to sync project settings across multiple machines. Modifying the contents of this file can be a poor life decision if you don't know what you're doing. This file is not useful unless accompanied by the project that created it in CodeKit. For more information, see: http:\/\/incident57.com\/codekit",
   "creatorBuild" : "8283",
   "files" : {
+    "\/js\/main.min.js" : {
+      "ignoreWasSetByUser" : 0,
+      "ignore" : 1,
+      "hidden" : 0,
+      "outputPathIsSetByUser" : 0,
+      "inputAbbreviatedPath" : "\/js\/main.min.js",
+      "outputStyle" : 1,
+      "syntaxCheckerStyle" : 0,
+      "outputAbbreviatedPath" : "\/js\/main.min.min.js",
+      "fileType" : 64
+    },
     "\/js\/plugins.js" : {
       "ignoreWasSetByUser" : 0,
       "ignore" : 0,
@@ -23,17 +34,6 @@
       "outputAbbreviatedPath" : "\/apple-touch-icon-144x144-precomposed.png",
       "initialSize" : 1475,
       "fileType" : 8192
-    },
-    "\/js\/main.min.js" : {
-      "ignoreWasSetByUser" : 0,
-      "ignore" : 1,
-      "hidden" : 0,
-      "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/js\/main.min.js",
-      "outputStyle" : 1,
-      "syntaxCheckerStyle" : 0,
-      "outputAbbreviatedPath" : "\/js\/main.min.min.js",
-      "fileType" : 64
     },
     "\/css\/main.css" : {
       "ignoreWasSetByUser" : 0,
@@ -166,17 +166,6 @@
       "initialSize" : 35019,
       "fileType" : 4096
     },
-    "\/apple-touch-icon.png" : {
-      "ignoreWasSetByUser" : 0,
-      "ignore" : 0,
-      "hidden" : 0,
-      "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/apple-touch-icon.png",
-      "processed" : 0,
-      "outputAbbreviatedPath" : "\/apple-touch-icon.png",
-      "initialSize" : 730,
-      "fileType" : 8192
-    },
     "\/apple-touch-icon-precomposed.png" : {
       "ignoreWasSetByUser" : 0,
       "ignore" : 0,
@@ -187,6 +176,15 @@
       "outputAbbreviatedPath" : "\/apple-touch-icon-precomposed.png",
       "initialSize" : 730,
       "fileType" : 8192
+    },
+    "\/config.rb" : {
+      "ignoreWasSetByUser" : 0,
+      "ignore" : 0,
+      "hidden" : 0,
+      "outputPathIsSetByUser" : 0,
+      "inputAbbreviatedPath" : "\/config.rb",
+      "outputAbbreviatedPath" : "No Output Path",
+      "fileType" : 32768
     },
     "\/js\/main.js" : {
       "ignoreWasSetByUser" : 0,
@@ -199,14 +197,16 @@
       "outputAbbreviatedPath" : "\/js\/main.min.js",
       "fileType" : 64
     },
-    "\/config.rb" : {
+    "\/apple-touch-icon.png" : {
       "ignoreWasSetByUser" : 0,
       "ignore" : 0,
       "hidden" : 0,
       "outputPathIsSetByUser" : 0,
-      "inputAbbreviatedPath" : "\/config.rb",
-      "outputAbbreviatedPath" : "No Output Path",
-      "fileType" : 32768
+      "inputAbbreviatedPath" : "\/apple-touch-icon.png",
+      "processed" : 0,
+      "outputAbbreviatedPath" : "\/apple-touch-icon.png",
+      "initialSize" : 730,
+      "fileType" : 8192
     },
     "\/img-source\/screenshot-scienceis.png" : {
       "ignoreWasSetByUser" : 0,
