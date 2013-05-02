@@ -61,4 +61,9 @@ function updateThemeColor(hue) {
     }
   });
 
+  $(window).resize(function () {
+    $('#page').css('top', $(window).height());
+  });
+  $(window).resize();
+
 })(jQuery);

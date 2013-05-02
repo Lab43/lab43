@@ -142,7 +142,7 @@ img, svg {
     background: $pageBackground;
     border-top-width: 1px;
     border-top-style: solid;
-    //@include box-shadow(0 -1px 0 rgba(0, 0, 0, 0.1));
+    @include box-shadow(0 -0.25em 0 rgba(0, 0, 0, 0.1));
     padding: 1px 0; // force child margin containment
     margin-bottom: 2em;
   }
@@ -179,6 +179,7 @@ footer {
   padding: 0.5em 0.75em;
   z-index: 2;
   @extend %sans;
+  @include box-shadow(0 0.25em 0 rgba(0, 0, 0, 0.1));
   a {
     color: $textOverThemeColor;
   }
@@ -389,6 +390,7 @@ footer {
   display: inline-block;
   position: relative;
   margin: 0;
+  width: 100%; // fixes ios image sizing
   background: $frame-background;
   border: 1px solid $frame-border;
   @include border-radius(4px);
