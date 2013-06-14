@@ -10,7 +10,6 @@ function updateThemeColor(hue) {
   var rules = [
     '.theme-background {background-color: ' + color + ';}',
     '.theme-background-hover:hover {background-color: ' + hover + ';}',
-    '.theme-border-dark { border-color: ' + hover + ';}',
     'h2, a { color: ' + color + ';}',
     'a:hover { color: ' + hover + ';}'
   ];
@@ -37,34 +36,5 @@ function updateThemeColor(hue) {
       updateThemeColor(hue);
     });
   }
-
-  // mobile nav toggle functionality
-  $('#nav .toggle').click(function (e) {
-    e.preventDefault();
-    $('#nav ul').toggle(100);
-  });
-
-  $('#nav a').click(function (e) {
-    $('#nav ul').hide(100);
-  });
-
-  // show logo in nav when scrolled past masthead
-  // this should probably be throttled, and disabled when nav is in mobile mode.
-  $(window).scroll(function (e) {
-    var pos = $(window).scrollTop();
-    var point = $('#masthead').height();
-    point -= $('#nav').height();
-    if (pos >= point) {
-      $('#nav').addClass('show-top-link');
-    } else {
-      $('#nav').removeClass('show-top-link');
-    }
-  });
-
-  // fixes iOS positioning issues. See readme
-  $(window).resize(function () {
-    $('#page').css('top', $(window).height());
-  });
-  $(window).resize();
 
 })(jQuery);
