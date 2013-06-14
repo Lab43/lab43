@@ -27,15 +27,11 @@ $lineColorHover: darken($lineColor, 3%);
 $fieldFocusColor: #51cbee;
 
 // layout
-$pageWidth: 800px;
-$navHeight: 2em;
-$mobileBreak: 600px;
+$pageWidth: 650px;
+$headerHeight: 360px;
+$mobileHeaderHeight: 200px;
+$mobileBreak: 500px;
 
-// screenshot frames
-$frame-border: $lineColor;
-$frame-border-hover: $lineColorHover;
-$frame-background: #fff;
-$frame-background-hover: darken($frame-background, 3%);
 
 // fonts
 %serif {
@@ -76,9 +72,7 @@ html {
   @extend %serif;
   line-height: 1.5;
   color: $textColor;
-  @media (min-width: $mobileBreak) { font-size: 16px }
-  @media (min-width: 800px) { font-size: 18px }
-  @media (min-width: 920px) { font-size: 24px }
+  @media (min-width: $mobileBreak) { font-size: 24px }
 }
 
 body,
@@ -111,19 +105,8 @@ h2 {
   @media (min-width: $mobileBreak) {
     margin: 0 5%;
   }
-  @media (min-width: 660px ) {
-    width: 600px;
-    margin: 0 auto;
-  }
-}
-
-@mixin narrowPageWidth {
-  margin: 0 1.5em;
-  @media (min-width: $mobileBreak) {
-    margin: 0 5%;
-  }
-  @media (min-width: 814px ) {
-    width: 740px;
+  @media (min-width: $pageWidth * 1.1 ) {
+    width: $pageWidth;
     margin: 0 auto;
   }
 }
@@ -138,13 +121,13 @@ img, svg {
 #page {
   z-index: 1;
   position: relative;
-  top: 200px;
+  top: $mobileHeaderHeight;
   background: $pageBackground;
   @include box-shadow(0 -0.25em 0 rgba(0, 0, 0, 0.1));
   padding: 1px 0; // force child margin containment
   margin-bottom: 2em;
   @media (min-width: $mobileBreak)  {
-    top: 320px;
+    top: $headerHeight;
   }
 }
 section {
@@ -169,7 +152,7 @@ footer {
 
 #masthead {
   display: block;
-  height: 200px;
+  height: $mobileHeaderHeight;
   position: fixed;
   top: 0;
   left: 0;
@@ -187,7 +170,7 @@ footer {
     background-size: contain;
   }
   @media (min-width: $mobileBreak)  {
-    height: 320px;
+    height: $headerHeight;
   }
 }
 
