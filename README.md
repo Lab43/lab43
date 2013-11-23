@@ -12,3 +12,12 @@
 
 * I added a shadow to #page and made sure that the shadow is immediately visible because apparently if an element isn't visible iOS doesn't render it. Without the shadow, you would start scrolling and it would take a second for #page to appear. This didn't have to be fixed with a shadow. I just had to make sure that some part of #page was always visible.
 * Before, I simply put top:100% on #page so that it would sit just below the bottom of the window until scrolled into view. This didn't work in iOS. Top:100% seemed to include the entire page, not just the viewable area. I fixed this by using javascript to calculate the window height and add it to #page as inline style ( $('#page').css('top', $(window).height()) ). I then moved position:relative into a media query so that the inline top position would be ignored when the website is in a mobile state, this way I was able to avoid using !important in the css.
+
+## Sites to Include:
+
+* Video Queue
+* Useful Science
+* eusonic
+* Muslima
+* NMAH
+* MOCA
