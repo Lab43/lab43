@@ -72,13 +72,13 @@ figure {
 // ==========
 
 html {
-  font-size: 13px;
+  font-size: 15px;
   @extend %serif;
   line-height: 1.5;
   color: $textColor;
-  @media (min-width: $mobileBreak) { font-size: 16px }
-  @media (min-width: 800px) { font-size: 18px }
-  @media (min-width: 920px) { font-size: 24px }
+  @media (min-width: $mobileBreak) { font-size: 18px }
+  @media (min-width: 850px) { font-size: 20px }
+  @media (min-width: 1020px) { font-size: 24px }
 }
 
 body,
@@ -93,6 +93,7 @@ a {
 
 h1, h2, h3 {
   @extend %sans;
+  line-height: normal;
 }
 
 h2 {
@@ -103,6 +104,10 @@ h2 {
 h3 {
   font-size: 1.5em;
   margin: 0.7em 0 0.2em;
+}
+
+p {
+  margin-top: 1em;
 }
 
 
@@ -174,7 +179,7 @@ footer {
   left: 0;
   right: 0;
   top: 0;
-  font-size: 2em;
+  font-size: 1.5em;
   //border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   border-bottom-width: 1px;
   border-bottom-style: solid;
@@ -228,7 +233,6 @@ footer {
   }
 
   @media (min-width: $mobileBreak)  {
-    //text-transform: uppercase;
     z-index: 2;
     height: $navHeight;
     padding: 0;
@@ -336,10 +340,7 @@ footer {
 // =============
 
 #about {
-  .hello {
-    font-size: 2.2em;
-  }
-  padding: 3em 0;
+  padding: 5em 0;
 }
 
 
@@ -351,7 +352,7 @@ footer {
 
 #projects {
   article {
-    margin-top: 4em;
+    margin: 4em 0;
     @media (min-width: 480px) {
       @include clearfix;
       figure {
@@ -372,7 +373,6 @@ footer {
     }
   }
   .view {
-    margin-top: 1em;
     &:after {
       content: ' \2192';
       color: $lineColor;
@@ -380,6 +380,12 @@ footer {
     &:hover:after {
       color: $lineColorHover;
     }
+  }
+  .role {
+    @extend %sans;
+    color: $subtleTextColor;
+    font-size: 0.8em;
+    margin-top: 0;
   }
 }
 
