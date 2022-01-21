@@ -1,17 +1,3 @@
-/* need to test for:
-    svg
-    rgba
-    box-shadow
-
-right now, rgba is being used for borders on nav. Maybe I should swap this out for specific colors, set by js. This will help the border match the hover background, and will solve ie8 rgba support.
-
-*/
-
-@import "compass";
-
-
-
-
 // =========
 // variables
 // =========
@@ -62,6 +48,27 @@ img {
 }
 figure {
   margin: 0;
+}
+
+
+
+
+// ======
+// mixins
+// ======
+
+@mixin hide-text {
+  text-indent: 200%;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+@mixin clearfix {
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
 }
 
 
@@ -129,7 +136,7 @@ p {
 }
 
 * {
-  @include box-sizing(border-box);
+  box-sizing: border-box;
 }
 html, body {
   height: 100%;
@@ -149,7 +156,7 @@ img, svg {
     background: $pageBackground;
     border-top-width: 1px;
     border-top-style: solid;
-    @include box-shadow(0 -0.25em 0 rgba(0, 0, 0, 0.1));
+    box-shadow: 0 -0.25em 0 rgba(0, 0, 0, 0.1);
     padding: 1px 0; // force child margin containment
     margin-bottom: 2em;
   }
@@ -186,7 +193,7 @@ footer {
   padding: 0.5em 0.75em;
   z-index: 2;
   @extend %sans;
-  @include box-shadow(0 0.25em 0 rgba(0, 0, 0, 0.1));
+  box-shadow: 0 0.25em 0 rgba(0, 0, 0, 0.1);
   a {
     color: $textOverThemeColor;
   }
@@ -209,7 +216,7 @@ footer {
   .toggle {
     display: block;
     background: none;
-    @include border-radius(0);
+    border-radius: 0;
     padding: 0;
     @include hide-text;
     position: absolute;
@@ -273,7 +280,7 @@ footer {
       z-index: 1;
       padding: 0;
       height: 100%;
-      @include transition(margin-left 0.6s);
+      transition: margin-left 0.6s;
       border-left-width: 1px;
       border-left-style: solid;
     }
@@ -321,7 +328,7 @@ footer {
     h1 {
       position: absolute;
       bottom: 0;
-      top: $navHeight / 2;
+      top: calc($navHeight / 2);
       left: 0;
       right: 0;
       @include hide-text;
@@ -381,7 +388,8 @@ footer {
       color: $lineColorHover;
     }
   }
-  .role {
+  .role,
+  .lead {
     @extend %sans;
     color: $subtleTextColor;
     font-size: 0.8em;
@@ -403,7 +411,7 @@ footer {
   width: 100%; // fixes ios image sizing
   background: $frame-background;
   border: 1px solid $frame-border;
-  @include border-radius(4px);
+  border-radius: 4px;
 
   // circles
   &:before, &:after {
@@ -416,7 +424,7 @@ footer {
     top: 12px;
     background: $frame-background;
     border: 1px solid $frame-border;
-    @include border-radius(50%);
+    border-radius: 50%;
   }
   &:after {
     left: 32px;
@@ -450,7 +458,7 @@ footer {
       height: 22px;
       background: $frame-background;
       border: 1px solid $frame-border;
-      @include border-radius(2px);
+      border-radius: 2px;
     }
   }
 
@@ -478,15 +486,15 @@ textarea {
   color: $textColor;
   font-size: 1em;
   border: 1px solid $lineColor;
-  @include border-radius(4px);
+  border-radius: 4px;
   width: 100%;
   max-width: 24em;
   padding: 0.4em 0.6em;
-  @include box-shadow(inset 0 1px 0 #eee);
+  box-shadow: inset 0 1px 0 #eee;
   background: #fff;
   outline: none;
   &:focus {
-    @include box-shadow(0 0 5px $fieldFocusColor);
+    box-shadow: 0 0 5px $fieldFocusColor;
     border: 1px solid $fieldFocusColor;
   }
 }
@@ -498,7 +506,7 @@ input, textarea {
 button {
   width: auto;
   font-weight: bold;
-  @include border-radius(5px);
+  border-radius: 5px;
   color: $textOverThemeColor;
   padding: 0.4em 1em;
   cursor: pointer;
