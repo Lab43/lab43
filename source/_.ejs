@@ -56,7 +56,7 @@
 
     <section id='projects'>
       <h2>Projects</h2>
-      <% projects.forEach(({title, role, lead, image, link, content}) => { %>
+      <% projects.forEach(({title, role, lead, leadLink, image, link, content}) => { %>
         <article>
           <figure class='frame'>
             <a href='<%- link %>' target='_blank'>
@@ -64,9 +64,18 @@
             </a>
           </figure>
           <h3><%- title %></h3>
-          <p class='role'>Role: <%- role %></p>
+          <p class='role'>
+            Role: <%- role %>
+          </p>
           <% if (lead) { %>
-            <p class='lead'>Project Lead: <%- lead %></p>
+            <p class='lead'>
+              Project Lead:
+              <% if (leadLink) { %>
+                <a href='<%- leadLink %>' target='_blank'><%- lead %></a>
+              <% } else { %>
+                <%- lead %>
+              <% } %>
+            </p>
           <% } %>
           <p><%- content %></p>
           <p class='view'><a href='<%- link %>' target='_blank'>Visit <%- title %></a></p>
