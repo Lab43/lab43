@@ -38,7 +38,7 @@ const underdot = new Underdot({
     }),
     postcss([autoprefixer]),
     srcset({presets: srcsetPresets}),
-    cname('underdot-boilerplate.gh.l43.co'),
+    cname('lab43.com'),
     bust(),
   ]
 });
