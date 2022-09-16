@@ -6,11 +6,11 @@
     "underdot": "^1.0.2",
     "underdot-bust": "^1.0.1",
     "underdot-cname": "^1.0.0",
-    "underdot-collection": "0.0.1",
     "underdot-ejs": "^1.0.0",
     "underdot-postcss": "^1.0.1",
     "underdot-sass": "^1.0.0",
-    "underdot-srcset": "^1.0.1"
+    "underdot-srcset": "^1.0.1",
+    "underdot-svgo": "^1.0.1"
   },
   "scripts": {
     "build": "node index",

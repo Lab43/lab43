@@ -1,0 +1,39 @@
+:root {
+  --septa-size: 700px;
+  // amount to offset rotated septagons so that the sides align (before scaling them up)
+  --septa-offset: 0.463;
+  --septa-scale: 1.1;
+  --septa-color-offset: 0;
+}
+
+
+header {
+  position: relative;
+  height: 100vh;
+}
+
+#septagons {
+  svg {
+    position: absolute;
+    right: 50%;
+    top: 50%;
+    height: var(--septa-size);
+    width: var(--septa-size);
+    margin-top: calc(var(--septa-size) / -2);
+    transform-origin: right center;
+    mix-blend-mode: multiply;
+    //transition: fill 25ms; // keep in sync with javascript
+
+    @for $i from 0 to 7 {
+      &:nth-child(#{$i+1}) {
+        transform:
+          rotate(calc(360deg / 7 * $i))
+          translateX(calc(var(--septa-size) * var(--septa-offset)))
+          scale(var(--septa-scale))
+        ;
+        fill: hsl(calc(360 / 7 * $i + var(--septa-color-offset)), 100%, 70%);
+      }
+    }
+
+  }
+}

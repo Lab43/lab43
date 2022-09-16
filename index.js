@@ -6,7 +6,7 @@ const Underdot = require('underdot')
     , ejs = require('underdot-ejs')
     , cname = require('underdot-cname')
     , bust = require('underdot-bust')
-    , collection = require('underdot-collection')
+    , svgo = require('underdot-svgo')
 ;
 
 
@@ -32,14 +32,18 @@ const underdot = new Underdot({
       sourceMap: true,
       outputStyle: 'expanded',
     }),
-    collection({
-      name: 'projects',
-      directory: 'projects',
-    }),
     postcss([autoprefixer]),
     srcset({presets: srcsetPresets}),
     cname('lab43.com'),
     bust(),
+    svgo({
+      plugins: [
+        {inlineStyles:  false}, // so we can avoid !important in our css
+        {removeViewBox: false}, // allow css resizing https://css-tricks.com/scale-svg/
+        {prefixIds:     true }, // prevent styles from one svg affecting another
+        {removeTitle:   false}, // improve accessibility by not remove <title> tags
+      ],
+    }),
   ]
 });
 

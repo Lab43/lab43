@@ -6,117 +6,24 @@
   <title><%- locals.title ? `${title} – ${siteTitle}` : siteTitle %></title>
   <meta name='viewport' content='width=device-width, initial-scale=1'>
   <link rel='stylesheet' href='<%- busted('/css/styles.css'); %>'>
-  <style id='theme-sheet'>
-    .theme-background {
-      background-color: #7aa5b8;
-      background-color: hsl(198, 30%, 60%);
-    }
-    .theme-background-hover:hover {
-      background-color: #598fa6;
-      background-color: hsl(198, 30%, 50%);
-    }
-    .theme-border-dark {
-      border-color: #598fa6;
-      border-color: hsl(198, 30%, 50%);
-    }
-    h2, a {
-      color: hsl(198, 30%, 60%);
-    }
-    a:hover {
-      color: hsl(198, 30%, 40%);
-    }
-  </style>
-  <script type='text/javascript' src='//use.typekit.net/box3izp.js'></script>
-  <script type='text/javascript'>try{Typekit.load();}catch(e){}</script>
 </head>
 
 <body<%- locals.bodyClass && ` class='${bodyClass}'` %>>
 
-  <nav id='nav' class='theme-background theme-border-dark'>
-    <div class='inner'>
-      <a href='#' class='top theme-background-hover theme-border-dark'>Top</a>
-      <ul class='theme-background theme-border-dark'>
-        <li><a href='#about' class='theme-background-hover theme-border-dark'>About</a></li>
-        <li><a href='#projects' class='theme-background-hover theme-border-dark'>Projects</a></li>
-        <li><a href='#contact' class='theme-background-hover theme-border-dark'>Contact</a></li>
-      </ul>
-      <button class='toggle'>Toggle Menu</button>
+  <header>
+    <h1><%- svgo('/img/_43.svg'); %></h1>
+    <div id='septagons'>
+      <%- svgo('/img/_septagon.svg'); %>
+      <%- svgo('/img/_septagon.svg'); %>
+      <%- svgo('/img/_septagon.svg'); %>
+      <%- svgo('/img/_septagon.svg'); %>
+      <%- svgo('/img/_septagon.svg'); %>
+      <%- svgo('/img/_septagon.svg'); %>
+      <%- svgo('/img/_septagon.svg'); %>
     </div>
-  </nav>
-
-  <header id='masthead' class='theme-background'>
-
-    <h1>Lab 43</h1>
-
   </header>
 
-  <div id='page' class='theme-border-dark'>
-
-    <%- content %>
-
-    <section id='projects'>
-      <h2>Projects</h2>
-      <% projects.forEach(({title, role, lead, leadLink, image, link, content}) => { %>
-        <article>
-          <figure class='frame'>
-            <a href='<%- link %>' target='_blank'>
-              <img src='<%- image %>' alt='<%- title %>'>
-            </a>
-          </figure>
-          <h3><%- title %></h3>
-          <p class='role'>
-            Role: <%- role %>
-          </p>
-          <% if (lead) { %>
-            <p class='lead'>
-              Project Lead:
-              <% if (leadLink) { %>
-                <a href='<%- leadLink %>' target='_blank'><%- lead %></a>
-              <% } else { %>
-                <%- lead %>
-              <% } %>
-            </p>
-          <% } %>
-          <p><%- content %></p>
-          <p class='view'><a href='<%- link %>' target='_blank'>Visit <%- title %></a></p>
-        </article>
-      <% }); %>
-    </section>
-
-    <section id='contact'>
-      <h2>Contact</h2>
-      <div id='wufoo-zyhpr650zjwh6c'>
-        Fill out my <a href='https://lab43.wufoo.com/forms/zyhpr650zjwh6c'>online form</a>.
-      </div>
-      <script type='text/javascript'>var zyhpr650zjwh6c;(function(d, t) {
-        var s = d.createElement(t), options = {
-          'userName':'lab43',
-          'formHash':'zyhpr650zjwh6c',
-          'autoResize':true,
-          'height':'497',
-          'async':true,
-          'host':'wufoo.com',
-          'header':'hide',
-          'ssl':true
-        };
-        s.src = ('https:' == d.location.protocol ? 'https://' : 'http://') + 'secure.wufoo.com/scripts/embed/form.js';
-        s.onload = s.onreadystatechange = function() {
-        var rs = this.readyState; if (rs) if (rs != 'complete') if (rs != 'loaded') return;
-        try { zyhpr650zjwh6c = new WufooForm();zyhpr650zjwh6c.initialize(options);zyhpr650zjwh6c.display(); } catch (e) {}};
-        var scr = d.getElementsByTagName(t)[0], par = scr.parentNode; par.insertBefore(s, scr);
-        })(document, 'script');
-      </script>
-    </section>
-
-    <footer>
-      <small>&copy;<%- new Date().getFullYear(); %> Lab 43</small>
-    </footer>
-
-  </div>
-
-  <script src='/js/vendor/jquery-1.9.1.min.js'></script>
-  <script src='<%- busted('/js/plugins.js'); %>'></script>
-  <script src='<%- busted('/js/main.js'); %>'></script>
+  <script type='text/javascript' src='<%- busted('/js/scripts.js'); %>'></script>
 
 </body>
 
