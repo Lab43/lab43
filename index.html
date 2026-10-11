@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab 43</title>
+<meta name="description" content="Lab 43 — web design and development.">
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+  html,
+  body {
+    margin: 0;
+  }
+
+  body {
+    background-color: #fffefb;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.3 0 0 0 0 0.2 0 0 0 0 0.1 3 0 0 0 -1.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.1'/%3E%3C/svg%3E");
+  }
+
+  header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    min-height: 100dvh;
+    box-sizing: border-box;
+    padding: 48px 16px;
+    overflow: clip;
+  }
+
+  .logo {
+    --cycle: 8s;
+    --max-scale: 1.3;
+    --min-scale: 1;
+    --idle-scale: 1.05;
+    --threshold-scale: 5;
+    --zone-scale: 2;
+    --wordmark-scale: 0.85;
+
+    width: min(529px, 75vw);
+    height: auto;
+    display: block;
+    overflow: visible;
+  }
+
+  .logo .layers {
+    isolation: isolate;
+  }
+
+  .logo .layers use {
+    mix-blend-mode: multiply;
+    transform-box: view-box;
+    transform-origin: var(--ex) var(--ey);
+    transform: scale(var(--s, 1));
+  }
+
+  body:has(#anchor-corner:checked) .logo .layers use {
+    transform-origin: var(--cx) var(--cy);
+  }
+
+  #punch-43 use {
+    transform-box: fill-box;
+    transform-origin: center;
+    transform: scale(var(--wordmark-scale));
+  }
+
+  body:has(#show-guide:not(:checked)) .guide,
+  body:has(#show-zone:not(:checked)) .zone {
+    display: none;
+  }
+
+  body:has(#show-layer-0:not(:checked)) .layers use:nth-child(1),
+  body:has(#show-layer-1:not(:checked)) .layers use:nth-child(2),
+  body:has(#show-layer-2:not(:checked)) .layers use:nth-child(3),
+  body:has(#show-layer-3:not(:checked)) .layers use:nth-child(4),
+  body:has(#show-layer-4:not(:checked)) .layers use:nth-child(5),
+  body:has(#show-layer-5:not(:checked)) .layers use:nth-child(6),
+  body:has(#show-layer-6:not(:checked)) .layers use:nth-child(7) {
+    display: none;
+  }
+
+  /* Dev controls */
+  .controls {
+    position: fixed;
+    z-index: 1;
+    top: 12px;
+    left: 12px;
+    max-height: calc(100vh - 24px);
+    overflow: auto;
+    background: rgb(255 255 255 / 0.85);
+    border-radius: 6px;
+    padding: 4px 6px;
+    font: 14px/1.4 system-ui, sans-serif;
+    color: #333;
+  }
+
+  .controls fieldset {
+    margin: 0 0 8px;
+    padding: 4px 8px 6px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+  }
+
+  .controls fieldset:last-child {
+    margin-bottom: 0;
+  }
+
+  .controls legend {
+    padding: 0 4px;
+    color: #666;
+  }
+
+  .controls label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .controls .setting {
+    justify-content: space-between;
+  }
+
+  .controls .setting input {
+    width: 5em;
+    font: inherit;
+  }
+
+  .controls .swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+  }
+</style>
+</head>
+<body>
+<div class="controls">
+  <fieldset>
+    <legend>Guides</legend>
+    <label><input type="checkbox" id="show-guide"> Source outline</label>
+    <label><input type="checkbox" id="show-zone"> Interactivity zone</label>
+  </fieldset>
+  <fieldset>
+    <legend>Mode</legend>
+    <label><input type="radio" name="effect" id="effect-revolve"> Non-interactive</label>
+    <label><input type="radio" name="effect" id="effect-mouse" checked> Interactive</label>
+  </fieldset>
+  <fieldset>
+    <legend>Anchor</legend>
+    <label><input type="radio" name="anchor" id="anchor-edge"> Edges</label>
+    <label><input type="radio" name="anchor" id="anchor-corner" checked> Corners</label>
+  </fieldset>
+  <fieldset>
+    <legend>Swell</legend>
+    <label><input type="radio" name="swell" id="swell-away"> Away from cursor</label>
+    <label><input type="radio" name="swell" id="swell-toward" checked> Toward cursor</label>
+  </fieldset>
+  <fieldset class="settings">
+    <legend>Settings</legend>
+    <label class="setting">Cycle (s) <input type="number" data-var="--cycle" data-unit="s" min="0.1" step="0.5"></label>
+    <label class="setting">Max scale <input type="number" data-var="--max-scale" min="1" step="0.05"></label>
+    <label class="setting">Min scale <input type="number" data-var="--min-scale" min="1" step="0.05"></label>
+    <label class="setting">Idle scale <input type="number" data-var="--idle-scale" min="1" step="0.05"></label>
+    <label class="setting">Threshold scale <input type="number" data-var="--threshold-scale" min="1" step="0.5"></label>
+    <label class="setting">Zone scale <input type="number" data-var="--zone-scale" min="1" step="0.1"></label>
+    <label class="setting">"43" scale <input type="number" data-var="--wordmark-scale" min="0.1" step="0.05"></label>
+  </fieldset>
+  <fieldset>
+    <legend>Layers</legend>
+    <label><input type="checkbox" id="show-layer-0" checked><span class="swatch" style="background:#FF6666"></span> Red</label>
+    <label><input type="checkbox" id="show-layer-1" checked><span class="swatch" style="background:#FF66FB"></span> Magenta</label>
+    <label><input type="checkbox" id="show-layer-2" checked><span class="swatch" style="background:#8066FF"></span> Purple</label>
+    <label><input type="checkbox" id="show-layer-3" checked><span class="swatch" style="background:#66D0FF"></span> Blue</label>
+    <label><input type="checkbox" id="show-layer-4" checked><span class="swatch" style="background:#66FFB6"></span> Mint</label>
+    <label><input type="checkbox" id="show-layer-5" checked><span class="swatch" style="background:#9BFF66"></span> Green</label>
+    <label><input type="checkbox" id="show-layer-6" checked><span class="swatch" style="background:#FFE266"></span> Yellow</label>
+  </fieldset>
+</div>
+<header>
+  <svg class="logo" viewBox="69.046 57.690 264.457 270.309" role="img" aria-label="Lab 43">
+    <defs>
+      <path id="heptagon" d="M333.5029297,243.8141785c0,5.5-3.5172729,12.8069153-7.8161621,16.2375488l-79.6361389,63.5521851
+        c-4.2989044,3.4306641-12.2033081,5.2359924-17.5653381,4.0118103l-99.3483887-22.6813049
+        c-5.36203-1.2241516-11.7011337-6.2803345-14.0868835-11.2359619l-44.2152328-91.8428497
+        c-2.3857498-4.9556274-2.3850174-13.0644836,0.0016251-18.0196686l44.237381-91.8463211
+        c2.3866425-4.9551926,8.7264252-10.0112686,14.0883942-11.2357178l99.3183289-22.6802444
+        c5.361969-1.224453,13.2663879,0.5805397,17.5653687,4.0110931l79.6407318,63.5525589
+        c4.2989807,3.4305496,7.8163147,10.7373734,7.8163147,16.2373734V243.8141785z"/>
+      <g id="wordmark">
+        <path d="M186.8183594,199.5151367c-5.0493164,0-5.2788086,0.6884766-6.8852539,5.5073242 l-3.2133789,9.4101562c-5.2783203,15.8359375-3.2128906,18.5898438,8.2626953,19.9667969l3.9013672,0.4599609 c2.2949219,1.1474609,1.6064453,7.1142578-1.1474609,8.0322266c-11.0161133-0.4589844-22.7211914-0.6884766-33.9672852-0.6884766 c-12.3930664,0-23.6391602,0.2294922-33.7373047,0.6884766c-2.5249023-2.0654297-1.8364258-6.6552734,0.6884766-8.0322266 l8.0327148-0.9189453c12.3935547-1.3769531,14-3.671875,18.8193359-19.5078125l3.2133789-10.328125 c1.1474609-3.9008789,0.6884766-4.5893555-3.9018555-4.5893555h-51.409668 c-2.2949219-1.3769531-2.9833984-4.3603516-1.6064453-7.34375l107.8686523-108.328125 c1.8359375-1.8359375,4.3603516-3.671875,7.5742188-3.671875h8.4912109c3.9023438,0,4.1318359,2.2949219,0,6.4262695 l-97.7700195,95.934082c-2.2954102,2.0654297-3.4428711,4.1308594,3.9013672,4.1308594h27.5410156 c4.3608398,0,4.8198242-0.2294922,5.737793-3.4423828l11.0161133-35.34375 c1.6064453-5.2792969,5.0493164-6.8857422,8.262207-8.4921875c5.5083008-2.7539062,18.3608398-6.8847656,21.5737305-6.8847656 c2.7543945,0,3.9018555,1.6064453,3.4428711,3.9013672l-14.4589844,45.671875 c-1.1474609,3.9013672-1.6064453,4.5898438,3.671875,4.5898438h15.1474609 c3.4433594,1.6064453,1.3779297,11.0166016-2.7539062,12.8525391H186.8183594z"/>
+        <path d="M224.0976562,213.7939453c-4.8203125-0.4589844-7.5742188-7.8037109-4.3613281-11.7050781 c10.0986328-3.4418945,29.3769531-11.0161133,39.9345703-17.4418945c10.5576172-6.4267578,18.1308594-14,18.1308594-22.7216797 c0-9.1806641-6.8847656-15.1474609-17.4423828-15.1474609c-9.4091797,0-21.1142578,7.8037109-29.1474609,19.2783203 c-3.4423828,0.9179688-6.1962891-1.6064453-6.6552734-4.5898438 c11.0166016-18.5898438,30.2949219-29.1474609,50.4912109-29.1474609c16.7539062,0,33.9677734,8.2626953,33.9677734,25.7050781 c0,13.7705078-13.0820312,22.9501953-34.4267578,30.5244141c-2.9833984,0.9179688-1.8359375,2.5244141,1.1474609,2.7539062 c13.7705078,1.1474609,28.2294922,11.7045898,28.2294922,32.1303711c0,21.3447266-17.4423828,40.6230469-34.1962891,51.4101562 c-19.9677734,12.8525391-44.0654297,17.2128906-58.5244141,17.2128906c-16.065918,0-27.3115234-4.8193359-27.3115234-16.0654297 c0-6.8857422,5.9667969-12.8525391,13.3110352-12.8525391c8.0327148,0,12.1645508,7.1142578,14.918457,10.5576172 c3.671875,4.3603516,7.5732422,6.8847656,13.0820312,6.8847656c23.1796875,0,43.3769531-23.4101562,43.6064453-51.1796875 c0.2294922-14.6884766-7.5742188-25.2460938-23.1806641-25.2460938 C238.3271484,204.1542969,230.5234375,208.2851562,224.0976562,213.7939453z"/>
+      </g>
+      <mask id="punch-43" maskUnits="userSpaceOnUse" x="-5000" y="-5000" width="10000" height="10000">
+        <rect x="-5000" y="-5000" width="10000" height="10000" fill="#fff"/>
+        <use href="#wordmark" fill="#000"/>
+      </mask>
+    </defs>
+
+    <g class="layers" mask="url(#punch-43)">
+      <use href="#heptagon" fill="#FF6666" style="--ex:92.942px; --ey:247.777px; --cx:119.388px; --cy:302.709px; --i:0"/>
+      <use href="#heptagon" fill="#FF66FB" style="--ex:178.811px; --ey:316.275px; --cx:238.234px; --cy:329.841px; --i:1"/>
+      <use href="#heptagon" fill="#8066FF" style="--ex:285.869px; --ey:291.828px; --cx:333.503px; --cy:253.814px; --i:2"/>
+      <use href="#heptagon" fill="#66D0FF" style="--ex:333.503px; --ey:192.844px; --cx:333.503px; --cy:131.875px; --i:3"/>
+      <use href="#heptagon" fill="#66FFB6" style="--ex:285.866px; --ey:93.861px; --cx:238.230px; --cy:55.847px; --i:4"/>
+      <use href="#heptagon" fill="#9BFF66" style="--ex:178.821px; --ey:69.414px; --cx:119.413px; --cy:82.980px; --i:5"/>
+      <use href="#heptagon" fill="#FFE266" style="--ex:92.955px; --ey:137.913px; --cx:66.497px; --cy:192.845px; --i:6"/>
+    </g>
+
+    <use class="guide" href="#heptagon" fill="none" stroke="#fff" stroke-width="1" stroke-dasharray="6 6" vector-effect="non-scaling-stroke"/>
+
+    <circle class="zone" cx="206.967" cy="192.844" r="280" fill="none" stroke="#999" stroke-width="1"
+      stroke-dasharray="6 6" vector-effect="non-scaling-stroke" pointer-events="none"/>
+  </svg>
+</header>
+<script>
+  const svg = document.querySelector('.logo');
+  const layers = [...svg.querySelectorAll('.layers use')];
+  const zone = svg.querySelector('.zone');
+  const effectMouse = document.getElementById('effect-mouse');
+  const anchorCorner = document.getElementById('anchor-corner');
+  const swellToward = document.getElementById('swell-toward');
+  const EASE_MS = 60;
+
+  const px = (el, name) => parseFloat(el.style.getPropertyValue(name));
+  const anchors = {
+    edge: layers.map(el => ({ x: px(el, '--ex'), y: px(el, '--ey') })),
+    corner: layers.map(el => ({ x: px(el, '--cx'), y: px(el, '--cy') })),
+  };
+  const centre = {
+    x: anchors.corner.reduce((sum, p) => sum + p.x, 0) / layers.length,
+    y: anchors.corner.reduce((sum, p) => sum + p.y, 0) / layers.length,
+  };
+  const cornerRadius = Math.max(...anchors.corner.map(p => Math.hypot(p.x - centre.x, p.y - centre.y)));
+
+  const outlineEdges = anchors.corner.map((a, i, corners) => {
+    const b = corners[(i + 1) % corners.length];
+    const len = Math.hypot(b.x - a.x, b.y - a.y);
+    let n = { x: (b.y - a.y) / len, y: -(b.x - a.x) / len };
+    let h = (a.x - centre.x) * n.x + (a.y - centre.y) * n.y;
+    if (h < 0) { n = { x: -n.x, y: -n.y }; h = -h; }
+    return { n, h };
+  });
+
+  // Distance from the centre to the outline along unit vector (ux, uy).
+  function outlineDistance(ux, uy) {
+    let nearest = Infinity;
+    for (const { n, h } of outlineEdges) {
+      const facing = n.x * ux + n.y * uy;
+      if (facing > 0) nearest = Math.min(nearest, h / facing);
+    }
+    return nearest;
+  }
+
+  let cursor = null;
+  let peaks = null;
+  let last = 0;
+  let phase = 0;
+
+  function cssVar(name) {
+    return parseFloat(getComputedStyle(svg).getPropertyValue(name));
+  }
+
+  function cycleMs() {
+    const value = getComputedStyle(svg).getPropertyValue('--cycle').trim();
+    return value.endsWith('ms') ? parseFloat(value) : parseFloat(value) * 1000;
+  }
+
+  function targetPeak(weight, s) {
+    if (!cursor || !effectMouse.checked) return s.idle;
+    const dist = Math.hypot(cursor.x, cursor.y);
+    if (dist >= s.zone) return s.idle;
+    const outline = dist ? outlineDistance(cursor.x / dist, cursor.y / dist) : Infinity;
+    if (dist >= outline) {
+      const influence = (s.zone - dist) / (s.zone - outline);
+      return s.idle + (s.min + (s.max - s.min) * weight - s.idle) * influence;
+    }
+    const remaining = dist / outline;
+    const innerMin = s.threshold + (s.min - s.threshold) * remaining;
+    return innerMin + (s.threshold - innerMin) * weight;
+  }
+
+  function tick(now) {
+    const points = anchorCorner.checked ? anchors.corner : anchors.edge;
+    const s = {
+      max: cssVar('--max-scale'),
+      min: cssVar('--min-scale'),
+      idle: cssVar('--idle-scale'),
+      threshold: cssVar('--threshold-scale'),
+      zone: cssVar('--zone-scale') * cornerRadius,
+    };
+    zone.setAttribute('r', s.zone);
+    const dt = last ? now - last : 0;
+    last = now;
+    phase += dt / cycleMs();
+    const k = dt ? 1 - Math.exp(-dt / EASE_MS) : 1;
+    const dist = cursor ? Math.hypot(cursor.x, cursor.y) : 0;
+    if (!peaks) peaks = layers.map(() => s.idle);
+    layers.forEach((el, i) => {
+      const dx = points[i].x - centre.x, dy = points[i].y - centre.y;
+      const facing = dist ? (cursor.x * dx + cursor.y * dy) / (dist * Math.hypot(dx, dy)) : 0;
+      const weight = 0.5 + 0.5 * (swellToward.checked ? -facing : facing);
+      peaks[i] += (targetPeak(weight, s) - peaks[i]) * k;
+      const wave = (1 - Math.cos(2 * Math.PI * (phase + i / layers.length))) / 2;
+      el.style.setProperty('--s', 1 + (peaks[i] - 1) * wave);
+    });
+    requestAnimationFrame(tick);
+  }
+
+  window.addEventListener('pointermove', e => {
+    const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(svg.getScreenCTM().inverse());
+    cursor = { x: p.x - centre.x, y: p.y - centre.y };
+  });
+  document.documentElement.addEventListener('pointerleave', () => {
+    cursor = null;
+  });
+  zone.setAttribute('r', cssVar('--zone-scale') * cornerRadius);
+
+  for (const input of document.querySelectorAll('.settings input')) {
+    const unit = input.dataset.unit || '';
+    input.value = cssVar(input.dataset.var);
+    input.addEventListener('input', () => {
+      if (input.value !== '') svg.style.setProperty(input.dataset.var, input.value + unit);
+    });
+  }
+
+  requestAnimationFrame(tick);
+</script>
+</body>
+</html>
