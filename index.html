@@ -4,17 +4,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lab 43</title>
-<meta name="description" content="Lab 43 — web design and development.">
+<meta name="description" content="Lab 43 — Cameron Spencer">
 <link rel="icon" href="favicon.ico" sizes="32x32">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://use.typekit.net/amh2hdk.css">
 <style>
+  :root {
+    --cream: #fffefb;
+    --faint: rgb(0 0 0 / 0.25);
+  }
+
   html,
   body {
     margin: 0;
   }
 
   body {
-    background-color: #fffefb;
+    font-family: sofia-pro, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--cream);
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.3 0 0 0 0 0.2 0 0 0 0 0.1 3 0 0 0 -1.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.1'/%3E%3C/svg%3E");
   }
 
@@ -48,15 +57,8 @@
     isolation: isolate;
   }
 
-  .logo .layers use {
+  .logo .layers path {
     mix-blend-mode: multiply;
-    transform-box: view-box;
-    transform-origin: var(--ex) var(--ey);
-    transform: scale(var(--s, 1));
-  }
-
-  body:has(#anchor-corner:checked) .logo .layers use {
-    transform-origin: var(--cx) var(--cy);
   }
 
   #punch-43 use {
@@ -65,34 +67,167 @@
     transform: scale(var(--wordmark-scale));
   }
 
+  .logo .hit,
+  .corner-button {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .logo .hit {
+    cursor: pointer;
+  }
+
+  .overlay-open .logo .hit {
+    cursor: auto;
+  }
+
   body:has(#show-guide:not(:checked)) .guide,
   body:has(#show-zone:not(:checked)) .zone {
     display: none;
   }
 
-  body:has(#show-layer-0:not(:checked)) .layers use:nth-child(1),
-  body:has(#show-layer-1:not(:checked)) .layers use:nth-child(2),
-  body:has(#show-layer-2:not(:checked)) .layers use:nth-child(3),
-  body:has(#show-layer-3:not(:checked)) .layers use:nth-child(4),
-  body:has(#show-layer-4:not(:checked)) .layers use:nth-child(5),
-  body:has(#show-layer-5:not(:checked)) .layers use:nth-child(6),
-  body:has(#show-layer-6:not(:checked)) .layers use:nth-child(7) {
+  body:has(#show-layer-0:not(:checked)) .layers path:nth-child(1),
+  body:has(#show-layer-1:not(:checked)) .layers path:nth-child(2),
+  body:has(#show-layer-2:not(:checked)) .layers path:nth-child(3),
+  body:has(#show-layer-3:not(:checked)) .layers path:nth-child(4),
+  body:has(#show-layer-4:not(:checked)) .layers path:nth-child(5),
+  body:has(#show-layer-5:not(:checked)) .layers path:nth-child(6),
+  body:has(#show-layer-6:not(:checked)) .layers path:nth-child(7) {
     display: none;
   }
 
-  /* Dev controls */
+  .icon-sprite {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
+
+  .icon {
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+  }
+
+  .about {
+    position: fixed;
+    z-index: 1;
+    inset: 0;
+    display: flex;
+    overflow-y: auto;
+    padding: 72px 24px;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .about-content {
+    width: 100%;
+    max-width: 30em;
+    margin: auto;
+    color: var(--cream);
+    font-size: clamp(18.75px, 1.875vw, 22.5px);
+    font-weight: 300;
+    line-height: 1.5;
+    pointer-events: auto;
+  }
+
+  .about-content p {
+    margin: 0;
+  }
+
+  .about-content strong {
+    font-weight: 900;
+  }
+
+  .about-content a {
+    color: inherit;
+  }
+
+  .social {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin: 1.25em 0;
+    padding: 0;
+    list-style: none;
+    font-size: 30px;
+  }
+
+  .social a {
+    display: block;
+    opacity: 0.85;
+  }
+
+  .social a:hover {
+    opacity: 1;
+  }
+
+  /* Settings panel (easter egg) */
+  .corner-button {
+    position: fixed;
+    z-index: 2;
+    bottom: 12px;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border: 0;
+    background: none;
+    --icon-base: var(--faint);
+    color: color-mix(in srgb, var(--cream) calc(var(--overlay-icons, 0) * 100%), var(--icon-base));
+    font-size: 32px;
+    cursor: pointer;
+  }
+
+  .corner-button:hover,
+  .corner-button[aria-expanded="true"] {
+    --icon-base: rgb(0 0 0 / 0.6);
+  }
+
+  .about-toggle {
+    left: 12px;
+  }
+
+  .controls-toggle {
+    right: 12px;
+  }
+
+  .corner-button[aria-expanded="false"] .icon-close,
+  .corner-button[aria-expanded="true"] .icon-open {
+    display: none;
+  }
+
   .controls {
     position: fixed;
     z-index: 1;
-    top: 12px;
-    left: 12px;
-    max-height: calc(100vh - 24px);
+    right: 12px;
+    bottom: 68px;
+    max-height: calc(100vh - 80px);
     overflow: auto;
     background: rgb(255 255 255 / 0.85);
     border-radius: 6px;
     padding: 4px 6px;
     font: 14px/1.4 system-ui, sans-serif;
     color: #333;
+    transform-origin: bottom right;
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+    visibility: hidden;
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.2s;
+  }
+
+  .controls.is-open {
+    opacity: 1;
+    transform: none;
+    visibility: visible;
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .controls {
+      transform: none;
+    }
   }
 
   .controls fieldset {
@@ -123,6 +258,10 @@
     justify-content: space-between;
   }
 
+  .controls .setting + .setting {
+    margin-top: 4px;
+  }
+
   .controls .setting input {
     width: 5em;
     font: inherit;
@@ -133,10 +272,47 @@
     height: 12px;
     border-radius: 3px;
   }
+
+  @media (hover: none) {
+    .controls-toggle,
+    .controls {
+      display: none;
+    }
+  }
 </style>
 </head>
 <body>
-<div class="controls">
+<svg class="icon-sprite" aria-hidden="true">
+  <!-- Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0) Copyright 2026 Fonticons, Inc. -->
+  <symbol id="icon-sliders" viewBox="0 0 512 512"><path d="M32 64C14.3 64 0 78.3 0 96s14.3 32 32 32l86.7 0c12.3 28.3 40.5 48 73.3 48s61-19.7 73.3-48L480 128c17.7 0 32-14.3 32-32s-14.3-32-32-32L265.3 64C253 35.7 224.8 16 192 16s-61 19.7-73.3 48L32 64zm0 160c-17.7 0-32 14.3-32 32s14.3 32 32 32l246.7 0c12.3 28.3 40.5 48 73.3 48s61-19.7 73.3-48l54.7 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-54.7 0c-12.3-28.3-40.5-48-73.3-48s-61 19.7-73.3 48L32 224zm0 160c-17.7 0-32 14.3-32 32s14.3 32 32 32l54.7 0c12.3 28.3 40.5 48 73.3 48s61-19.7 73.3-48L480 448c17.7 0 32-14.3 32-32s-14.3-32-32-32l-246.7 0c-12.3-28.3-40.5-48-73.3-48s-61 19.7-73.3 48L32 384z"/></symbol>
+  <symbol id="icon-github" viewBox="0 0 512 512"><path d="M216.5 362.5c-66-8-112.5-55.5-112.5-117 0-25 9-52 24-70-6.5-16.5-5.5-51.5 2-66 20-2.5 47 8 63 22.5 19-6 39-9 63.5-9s44.5 3 62.5 8.5c15.5-14 43-24.5 63-22 7 13.5 8 48.5 1.5 65.5 16 19 24.5 44.5 24.5 70.5 0 61.5-46.5 108-113.5 116.5 17 11 28.5 35 28.5 62.5l0 52C323 491.5 335.5 500 350.5 494 441 459.5 512 369 512 257 512 115.5 397 0 255.5 0S0 115.5 0 257c0 111 70.5 203 165.5 237.5 13.5 5 26.5-4 26.5-17.5l0-40c-7 3-16 5-24 5-33 0-52.5-18-66.5-51.5-5.5-13.5-11.5-21.5-23-23-6-.5-8-3-8-6 0-6 10-10.5 20-10.5 14.5 0 27 9 40 27.5 10 14.5 20.5 21 33 21s20.5-4.5 32-16c8.5-8.5 15-16 21-21z"/></symbol>
+  <symbol id="icon-linkedin" viewBox="0 0 448 512"><path d="M416 32L31.9 32C14.3 32 0 46.5 0 64.3L0 447.7C0 465.5 14.3 480 31.9 480L416 480c17.6 0 32-14.5 32-32.3l0-383.4C448 46.5 433.6 32 416 32zM135.4 416l-66.4 0 0-213.8 66.5 0 0 213.8-.1 0zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77zM384.3 416l-66.4 0 0-104c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9l0 105.8-66.4 0 0-213.8 63.7 0 0 29.2 .9 0c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9l0 117.2z"/></symbol>
+  <symbol id="icon-instagram" viewBox="0 0 448 512"><path d="M224.3 141a115 115 0 1 0 -.6 230 115 115 0 1 0 .6-230zm-.6 40.4a74.6 74.6 0 1 1 .6 149.2 74.6 74.6 0 1 1 -.6-149.2zm93.4-45.1a26.8 26.8 0 1 1 53.6 0 26.8 26.8 0 1 1 -53.6 0zm129.7 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM399 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/></symbol>
+  <symbol id="icon-globe" viewBox="0 0 512 512"><path d="M351.9 280l-190.9 0c2.9 64.5 17.2 123.9 37.5 167.4 11.4 24.5 23.7 41.8 35.1 52.4 11.2 10.5 18.9 12.2 22.9 12.2s11.7-1.7 22.9-12.2c11.4-10.6 23.7-28 35.1-52.4 20.3-43.5 34.6-102.9 37.5-167.4zM160.9 232l190.9 0C349 167.5 334.7 108.1 314.4 64.6 303 40.2 290.7 22.8 279.3 12.2 268.1 1.7 260.4 0 256.4 0s-11.7 1.7-22.9 12.2c-11.4 10.6-23.7 28-35.1 52.4-20.3 43.5-34.6 102.9-37.5 167.4zm-48 0C116.4 146.4 138.5 66.9 170.8 14.7 78.7 47.3 10.9 131.2 1.5 232l111.4 0zM1.5 280c9.4 100.8 77.2 184.7 169.3 217.3-32.3-52.2-54.4-131.7-57.9-217.3L1.5 280zm398.4 0c-3.5 85.6-25.6 165.1-57.9 217.3 92.1-32.7 159.9-116.5 169.3-217.3l-111.4 0zm111.4-48C501.9 131.2 434.1 47.3 342 14.7 374.3 66.9 396.4 146.4 399.9 232l111.4 0z"/></symbol>
+  <symbol id="icon-question" viewBox="0 0 320 512"><path d="M64 160c0-53 43-96 96-96s96 43 96 96c0 42.7-27.9 78.9-66.5 91.4-28.4 9.2-61.5 35.3-61.5 76.6l0 24c0 17.7 14.3 32 32 32s32-14.3 32-32l0-24c0-1.7 .6-4.1 3.5-7.3 3-3.3 7.9-6.5 13.7-8.4 64.3-20.7 110.8-81 110.8-152.3 0-88.4-71.6-160-160-160S0 71.6 0 160c0 17.7 14.3 32 32 32s32-14.3 32-32zm96 352c22.1 0 40-17.9 40-40s-17.9-40-40-40-40 17.9-40 40 17.9 40 40 40z"/></symbol>
+  <symbol id="icon-xmark" viewBox="0 0 384 512"><path d="M55.1 73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L147.2 256 9.9 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192.5 301.3 329.9 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.8 256 375.1 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192.5 210.7 55.1 73.4z"/></symbol>
+</svg>
+<section class="about" id="about" aria-label="About">
+  <div class="about-content">
+    <p>Hi, <strong>I’m Cameron Spencer</strong>, a software engineer and percussionist living in Chicago. These days I work full time as an engineering manager at a healthcare startup. Previously, I owned a web development business and built sites for various startups and wineries. I still take a small amount of contract work. <a href="mailto:cameron@lab43.com">Drop me a line</a> or find me online.</p>
+    <ul class="social">
+      <li><a href="https://github.com/lab43/" aria-label="GitHub"><svg class="icon" aria-hidden="true"><use href="#icon-github"/></svg></a></li>
+      <li><a href="https://www.linkedin.com/in/lab43" aria-label="LinkedIn"><svg class="icon" aria-hidden="true"><use href="#icon-linkedin"/></svg></a></li>
+      <li><a href="https://www.instagram.com/eusonic" aria-label="Instagram"><svg class="icon" aria-hidden="true"><use href="#icon-instagram"/></svg></a></li>
+      <li><a href="https://www.eusonic.com/" aria-label="eusonic.com"><svg class="icon" aria-hidden="true"><use href="#icon-globe"/></svg></a></li>
+    </ul>
+    <p><strong>What does Lab 43 mean though?</strong> Nothing in particular. I wanted a short domain name for my freelance business, so I looked at every available combination of “lab” and two numbers and picked lab43.com because it’s neutral and I liked it.</p>
+  </div>
+</section>
+<button class="corner-button about-toggle" type="button" aria-expanded="false" aria-controls="about" aria-label="About">
+  <svg class="icon icon-open" aria-hidden="true"><use href="#icon-question"/></svg>
+  <svg class="icon icon-close" aria-hidden="true"><use href="#icon-xmark"/></svg>
+</button>
+<button class="corner-button controls-toggle" type="button" aria-expanded="false" aria-controls="controls" aria-label="Settings">
+  <svg class="icon icon-open" aria-hidden="true"><use href="#icon-sliders"/></svg>
+  <svg class="icon icon-close" aria-hidden="true"><use href="#icon-xmark"/></svg>
+</button>
+<div class="controls" id="controls">
   <fieldset>
     <legend>Guides</legend>
     <label><input type="checkbox" id="show-guide"> Source outline</label>
@@ -199,14 +375,16 @@
     </defs>
 
     <g class="layers" mask="url(#punch-43)">
-      <use href="#heptagon" fill="#FF6666" style="--ex:92.942px; --ey:247.777px; --cx:119.388px; --cy:302.709px; --i:0"/>
-      <use href="#heptagon" fill="#FF66FB" style="--ex:178.811px; --ey:316.275px; --cx:238.234px; --cy:329.841px; --i:1"/>
-      <use href="#heptagon" fill="#8066FF" style="--ex:285.869px; --ey:291.828px; --cx:333.503px; --cy:253.814px; --i:2"/>
-      <use href="#heptagon" fill="#66D0FF" style="--ex:333.503px; --ey:192.844px; --cx:333.503px; --cy:131.875px; --i:3"/>
-      <use href="#heptagon" fill="#66FFB6" style="--ex:285.866px; --ey:93.861px; --cx:238.230px; --cy:55.847px; --i:4"/>
-      <use href="#heptagon" fill="#9BFF66" style="--ex:178.821px; --ey:69.414px; --cx:119.413px; --cy:82.980px; --i:5"/>
-      <use href="#heptagon" fill="#FFE266" style="--ex:92.955px; --ey:137.913px; --cx:66.497px; --cy:192.845px; --i:6"/>
+      <path fill="#FF6666" style="--ex:92.942px; --ey:247.777px; --cx:119.388px; --cy:302.709px; --i:0" d="M333.5029297,243.8141785c0,5.5-3.5172729,12.8069153-7.8161621,16.2375488l-79.6361389,63.5521851 c-4.2989044,3.4306641-12.2033081,5.2359924-17.5653381,4.0118103l-99.3483887-22.6813049 c-5.36203-1.2241516-11.7011337-6.2803345-14.0868835-11.2359619l-44.2152328-91.8428497 c-2.3857498-4.9556274-2.3850174-13.0644836,0.0016251-18.0196686l44.237381-91.8463211 c2.3866425-4.9551926,8.7264252-10.0112686,14.0883942-11.2357178l99.3183289-22.6802444 c5.361969-1.224453,13.2663879,0.5805397,17.5653687,4.0110931l79.6407318,63.5525589 c4.2989807,3.4305496,7.8163147,10.7373734,7.8163147,16.2373734V243.8141785z"/>
+      <path fill="#FF66FB" style="--ex:178.811px; --ey:316.275px; --cx:238.234px; --cy:329.841px; --i:1" d="M333.5029297,243.8141785c0,5.5-3.5172729,12.8069153-7.8161621,16.2375488l-79.6361389,63.5521851 c-4.2989044,3.4306641-12.2033081,5.2359924-17.5653381,4.0118103l-99.3483887-22.6813049 c-5.36203-1.2241516-11.7011337-6.2803345-14.0868835-11.2359619l-44.2152328-91.8428497 c-2.3857498-4.9556274-2.3850174-13.0644836,0.0016251-18.0196686l44.237381-91.8463211 c2.3866425-4.9551926,8.7264252-10.0112686,14.0883942-11.2357178l99.3183289-22.6802444 c5.361969-1.224453,13.2663879,0.5805397,17.5653687,4.0110931l79.6407318,63.5525589 c4.2989807,3.4305496,7.8163147,10.7373734,7.8163147,16.2373734V243.8141785z"/>
+      <path fill="#8066FF" style="--ex:285.869px; --ey:291.828px; --cx:333.503px; --cy:253.814px; --i:2" d="M333.5029297,243.8141785c0,5.5-3.5172729,12.8069153-7.8161621,16.2375488l-79.6361389,63.5521851 c-4.2989044,3.4306641-12.2033081,5.2359924-17.5653381,4.0118103l-99.3483887-22.6813049 c-5.36203-1.2241516-11.7011337-6.2803345-14.0868835-11.2359619l-44.2152328-91.8428497 c-2.3857498-4.9556274-2.3850174-13.0644836,0.0016251-18.0196686l44.237381-91.8463211 c2.3866425-4.9551926,8.7264252-10.0112686,14.0883942-11.2357178l99.3183289-22.6802444 c5.361969-1.224453,13.2663879,0.5805397,17.5653687,4.0110931l79.6407318,63.5525589 c4.2989807,3.4305496,7.8163147,10.7373734,7.8163147,16.2373734V243.8141785z"/>
+      <path fill="#66D0FF" style="--ex:333.503px; --ey:192.844px; --cx:333.503px; --cy:131.875px; --i:3" d="M333.5029297,243.8141785c0,5.5-3.5172729,12.8069153-7.8161621,16.2375488l-79.6361389,63.5521851 c-4.2989044,3.4306641-12.2033081,5.2359924-17.5653381,4.0118103l-99.3483887-22.6813049 c-5.36203-1.2241516-11.7011337-6.2803345-14.0868835-11.2359619l-44.2152328-91.8428497 c-2.3857498-4.9556274-2.3850174-13.0644836,0.0016251-18.0196686l44.237381-91.8463211 c2.3866425-4.9551926,8.7264252-10.0112686,14.0883942-11.2357178l99.3183289-22.6802444 c5.361969-1.224453,13.2663879,0.5805397,17.5653687,4.0110931l79.6407318,63.5525589 c4.2989807,3.4305496,7.8163147,10.7373734,7.8163147,16.2373734V243.8141785z"/>
+      <path fill="#66FFB6" style="--ex:285.866px; --ey:93.861px; --cx:238.230px; --cy:55.847px; --i:4" d="M333.5029297,243.8141785c0,5.5-3.5172729,12.8069153-7.8161621,16.2375488l-79.6361389,63.5521851 c-4.2989044,3.4306641-12.2033081,5.2359924-17.5653381,4.0118103l-99.3483887-22.6813049 c-5.36203-1.2241516-11.7011337-6.2803345-14.0868835-11.2359619l-44.2152328-91.8428497 c-2.3857498-4.9556274-2.3850174-13.0644836,0.0016251-18.0196686l44.237381-91.8463211 c2.3866425-4.9551926,8.7264252-10.0112686,14.0883942-11.2357178l99.3183289-22.6802444 c5.361969-1.224453,13.2663879,0.5805397,17.5653687,4.0110931l79.6407318,63.5525589 c4.2989807,3.4305496,7.8163147,10.7373734,7.8163147,16.2373734V243.8141785z"/>
+      <path fill="#9BFF66" style="--ex:178.821px; --ey:69.414px; --cx:119.413px; --cy:82.980px; --i:5" d="M333.5029297,243.8141785c0,5.5-3.5172729,12.8069153-7.8161621,16.2375488l-79.6361389,63.5521851 c-4.2989044,3.4306641-12.2033081,5.2359924-17.5653381,4.0118103l-99.3483887-22.6813049 c-5.36203-1.2241516-11.7011337-6.2803345-14.0868835-11.2359619l-44.2152328-91.8428497 c-2.3857498-4.9556274-2.3850174-13.0644836,0.0016251-18.0196686l44.237381-91.8463211 c2.3866425-4.9551926,8.7264252-10.0112686,14.0883942-11.2357178l99.3183289-22.6802444 c5.361969-1.224453,13.2663879,0.5805397,17.5653687,4.0110931l79.6407318,63.5525589 c4.2989807,3.4305496,7.8163147,10.7373734,7.8163147,16.2373734V243.8141785z"/>
+      <path fill="#FFE266" style="--ex:92.955px; --ey:137.913px; --cx:66.497px; --cy:192.845px; --i:6" d="M333.5029297,243.8141785c0,5.5-3.5172729,12.8069153-7.8161621,16.2375488l-79.6361389,63.5521851 c-4.2989044,3.4306641-12.2033081,5.2359924-17.5653381,4.0118103l-99.3483887-22.6813049 c-5.36203-1.2241516-11.7011337-6.2803345-14.0868835-11.2359619l-44.2152328-91.8428497 c-2.3857498-4.9556274-2.3850174-13.0644836,0.0016251-18.0196686l44.237381-91.8463211 c2.3866425-4.9551926,8.7264252-10.0112686,14.0883942-11.2357178l99.3183289-22.6802444 c5.361969-1.224453,13.2663879,0.5805397,17.5653687,4.0110931l79.6407318,63.5525589 c4.2989807,3.4305496,7.8163147,10.7373734,7.8163147,16.2373734V243.8141785z"/>
     </g>
+
+    <use class="hit" href="#heptagon" fill="transparent"/>
 
     <use class="guide" href="#heptagon" fill="none" stroke="#fff" stroke-width="1" stroke-dasharray="6 6" vector-effect="non-scaling-stroke"/>
 
@@ -216,12 +394,13 @@
 </header>
 <script>
   const svg = document.querySelector('.logo');
-  const layers = [...svg.querySelectorAll('.layers use')];
+  const layers = [...svg.querySelectorAll('.layers path')];
   const zone = svg.querySelector('.zone');
   const effectMouse = document.getElementById('effect-mouse');
   const anchorCorner = document.getElementById('anchor-corner');
   const swellToward = document.getElementById('swell-toward');
   const EASE_MS = 60;
+  const OVERLAY_MS = 700;
 
   const px = (el, name) => parseFloat(el.style.getPropertyValue(name));
   const anchors = {
@@ -233,6 +412,50 @@
     y: anchors.corner.reduce((sum, p) => sum + p.y, 0) / layers.length,
   };
   const cornerRadius = Math.max(...anchors.corner.map(p => Math.hypot(p.x - centre.x, p.y - centre.y)));
+
+  // The source heptagon's straight edges stop 10 units short of each true corner (radius ~20.77).
+  const CORNER_TANGENT = 10;
+  const edgeLength = Math.min(...anchors.corner.map((a, i, corners) => {
+    const b = corners[(i + 1) % corners.length];
+    return Math.hypot(b.x - a.x, b.y - a.y);
+  }));
+  const cornerArc = (() => {
+    const [a, v, b] = [anchors.corner[6], anchors.corner[0], anchors.corner[1]];
+    const angle = Math.acos(((a.x - v.x) * (b.x - v.x) + (a.y - v.y) * (b.y - v.y)) /
+      (Math.hypot(a.x - v.x, a.y - v.y) * Math.hypot(b.x - v.x, b.y - v.y)));
+    return CORNER_TANGENT * Math.tan(angle / 2);
+  })();
+
+  // Each layer is the source's true corners scaled about the anchor, re-rounded with the
+  // source's fixed corner radius, so anchored corners match the source exactly at any scale.
+  function layerPath(anchor, scale) {
+    const pts = anchors.corner.map(c => ({
+      x: anchor.x + (c.x - anchor.x) * scale,
+      y: anchor.y + (c.y - anchor.y) * scale,
+    }));
+    let d = '';
+    pts.forEach((v, k) => {
+      const a = pts[(k + pts.length - 1) % pts.length], b = pts[(k + 1) % pts.length];
+      const la = Math.hypot(a.x - v.x, a.y - v.y), lb = Math.hypot(b.x - v.x, b.y - v.y);
+      const p1 = { x: v.x + (a.x - v.x) / la * CORNER_TANGENT, y: v.y + (a.y - v.y) / la * CORNER_TANGENT };
+      const p2 = { x: v.x + (b.x - v.x) / lb * CORNER_TANGENT, y: v.y + (b.y - v.y) / lb * CORNER_TANGENT };
+      const sweep = (v.x - a.x) * (b.y - v.y) - (v.y - a.y) * (b.x - v.x) > 0 ? 1 : 0;
+      d += `${k ? 'L' : 'M'}${p1.x.toFixed(2)},${p1.y.toFixed(2)}` +
+        `A${cornerArc.toFixed(2)},${cornerArc.toFixed(2)} 0 0 ${sweep} ${p2.x.toFixed(2)},${p2.y.toFixed(2)}`;
+    });
+    return d + 'Z';
+  }
+
+  // Scale at which a layer's unanchored edges are all beyond the viewport.
+  function overlayScale(anchor, edgeMode) {
+    const inverse = svg.getScreenCTM().inverse();
+    const far = Math.max(...[[0, 0], [innerWidth, 0], [0, innerHeight], [innerWidth, innerHeight]].map(([x, y]) => {
+      const p = new DOMPoint(x, y).matrixTransform(inverse);
+      return Math.hypot(p.x - anchor.x, p.y - anchor.y);
+    }));
+    const reach = (edgeMode ? edgeLength / 2 : edgeLength) - CORNER_TANGENT;
+    return Math.max(1, far * 1.05 / reach);
+  }
 
   const outlineEdges = anchors.corner.map((a, i, corners) => {
     const b = corners[(i + 1) % corners.length];
@@ -257,6 +480,16 @@
   let peaks = null;
   let last = 0;
   let phase = 0;
+  let overlayOpen = false;
+  let overlayProgress = 0;
+  let overlayFrom = null;   // each layer's on-screen scale when the overlay was last toggled
+  let overlayFromEase = 0;  // eased progress at that moment
+  const shownScales = layers.map(() => 1);
+  const wordmarkCutout = svg.querySelector('#punch-43 use');
+  const about = document.getElementById('about');
+
+  const easeInOut = p => p < 0.5 ? 4 * p ** 3 : 1 - (-2 * p + 2) ** 3 / 2;
+  const lerpLog = (a, b, u) => Math.exp(Math.log(a) + (Math.log(b) - Math.log(a)) * u);
 
   function cssVar(name) {
     return parseFloat(getComputedStyle(svg).getPropertyValue(name));
@@ -268,7 +501,7 @@
   }
 
   function targetPeak(weight, s) {
-    if (!cursor || !effectMouse.checked) return s.idle;
+    if (!cursor || !effectMouse.checked || overlayOpen) return s.idle;
     const dist = Math.hypot(cursor.x, cursor.y);
     if (dist >= s.zone) return s.idle;
     const outline = dist ? outlineDistance(cursor.x / dist, cursor.y / dist) : Infinity;
@@ -297,18 +530,38 @@
     const k = dt ? 1 - Math.exp(-dt / EASE_MS) : 1;
     const dist = cursor ? Math.hypot(cursor.x, cursor.y) : 0;
     if (!peaks) peaks = layers.map(() => s.idle);
+    overlayProgress = Math.min(1, Math.max(0, overlayProgress + (overlayOpen ? dt : -dt) / OVERLAY_MS));
+    const t = easeInOut(overlayProgress);
+    wordmarkCutout.style.opacity = Math.max(0, 1 - 4 * t);
+    const aboutOpacity = Math.max(0, (t - 0.7) / 0.3);
+    about.style.opacity = aboutOpacity;
+    about.style.visibility = aboutOpacity > 0 ? 'visible' : 'hidden';
+    // The colours reach the bottom corners between t ≈ 0.35 and 0.7; fade the icons to cream then.
+    const iconMix = Math.min(1, Math.max(0, (t - 0.35) / 0.35));
+    document.documentElement.style.setProperty('--overlay-icons', iconMix * iconMix * (3 - 2 * iconMix));
     layers.forEach((el, i) => {
       const dx = points[i].x - centre.x, dy = points[i].y - centre.y;
       const facing = dist ? (cursor.x * dx + cursor.y * dy) / (dist * Math.hypot(dx, dy)) : 0;
       const weight = 0.5 + 0.5 * (swellToward.checked ? -facing : facing);
       peaks[i] += (targetPeak(weight, s) - peaks[i]) * k;
       const wave = (1 - Math.cos(2 * Math.PI * (phase + i / layers.length))) / 2;
-      el.style.setProperty('--s', 1 + (peaks[i] - 1) * wave);
+      let scale = 1 + (peaks[i] - 1) * wave;
+      // Blend from where each layer was when the overlay was toggled, so opening only ever
+      // grows and closing lands on the live animated scale.
+      if (overlayFrom && (overlayOpen || t > 0)) {
+        const big = overlayScale(points[i], !anchorCorner.checked);
+        scale = overlayOpen
+          ? lerpLog(overlayFrom[i], big, overlayFromEase < 1 ? (t - overlayFromEase) / (1 - overlayFromEase) : 1)
+          : lerpLog(scale, overlayFrom[i], overlayFromEase > 0 ? t / overlayFromEase : 0);
+      }
+      shownScales[i] = scale;
+      el.setAttribute('d', layerPath(points[i], scale));
     });
     requestAnimationFrame(tick);
   }
 
   window.addEventListener('pointermove', e => {
+    if (e.pointerType === 'touch') return;
     const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(svg.getScreenCTM().inverse());
     cursor = { x: p.x - centre.x, y: p.y - centre.y };
   });
@@ -324,6 +577,40 @@
       if (input.value !== '') svg.style.setProperty(input.dataset.var, input.value + unit);
     });
   }
+
+  const aboutToggle = document.querySelector('.about-toggle');
+
+  function setAboutOpen(open) {
+    if (open === overlayOpen) return;
+    overlayFrom = shownScales.slice();
+    overlayFromEase = easeInOut(overlayProgress);
+    overlayOpen = open;
+    aboutToggle.setAttribute('aria-expanded', open);
+    document.body.classList.toggle('overlay-open', open);
+  }
+
+  aboutToggle.addEventListener('click', () => setAboutOpen(!overlayOpen));
+  svg.querySelector('.hit').addEventListener('click', () => setAboutOpen(true));
+
+  const controlsToggle = document.querySelector('.controls-toggle');
+  const controls = document.getElementById('controls');
+
+  function setControlsOpen(open) {
+    controls.classList.toggle('is-open', open);
+    controlsToggle.setAttribute('aria-expanded', open);
+  }
+
+  controlsToggle.addEventListener('click', () => setControlsOpen(!controls.classList.contains('is-open')));
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    if (controls.classList.contains('is-open')) {
+      setControlsOpen(false);
+      controlsToggle.focus();
+    } else if (overlayOpen) {
+      setAboutOpen(false);
+      aboutToggle.focus();
+    }
+  });
 
   requestAnimationFrame(tick);
 </script>

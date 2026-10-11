@@ -5,7 +5,7 @@ animated logo, a short bio and some links, and no portfolio. It lives on the `ne
 [github.com/lab43/lab43](https://github.com/lab43/lab43), replacing the old site there.
 
 **Status:** the animated logo works as a prototype, and the page has a title, a description and a
-favicon. The bio and the links aren't built yet, and the branch isn't live; see
+favicon. The bio and links live in the about overlay (`section.about`). The branch isn't live; see
 [Deployment](#deployment).
 
 The site is a single self-contained page, `index.html`, with inline SVG, CSS and JavaScript, no
@@ -18,11 +18,9 @@ build step and no dependencies. Open it in a browser to run it.
 | `favicon.ico` | Fallback favicon (16, 32 and 48px PNGs), rendered from `favicon.svg`. |
 | `CNAME` | `lab43.com`, the custom domain for GitHub Pages. |
 | `.nojekyll` | Stops GitHub Pages running Jekyll, so files are served as-is. |
-| `Logo source.svg` | The original static logo from Illustrator: a black heptagon with a white "43". Design source. |
-| `Logo sketch.svg` | The design sketch of the multicoloured version, and the source of the outlined "43" paths. Design source. |
 
 GitHub Pages will serve the repo root, so **every file in the repo is public**, including the
-docs and design sources. That's fine because the repo is public anyway.
+docs. That's fine because the repo is public anyway.
 
 # The animated logo
 
@@ -47,11 +45,11 @@ stays put. The "43" is cut out of the layer stack, so the page background shows 
 ```
 svg.logo  (viewBox = source heptagon's bounding box)
 ├── defs
-│   ├── path#heptagon      source heptagon outline, copied from "Logo source.svg"
-│   ├── g#wordmark         outlined "43" paths, copied from "Logo sketch.svg"
+│   ├── path#heptagon      source heptagon outline (from the original Illustrator logo)
+│   ├── g#wordmark         outlined "43" paths (Adobe Garamond Pro Bold Italic, converted to outlines)
 │   └── mask#punch-43      white everywhere, black "43", which cuts the "43" out
 ├── g.layers  [mask=punch-43, isolation: isolate]
-│   └── 7 × use[href=#heptagon]   the coloured layers, mix-blend-mode: multiply
+│   └── 7 × path               the coloured layers, mix-blend-mode: multiply (d rebuilt by JS)
 ├── use.guide              dashed outline of the source heptagon (dev guide)
 └── circle.zone            dashed interactivity zone (dev guide; radius set by JS)
 ```
@@ -66,13 +64,14 @@ Notes:
 - **The mask is huge** (±5000 units) so the "43" cut-out still works when layers explode far
   off-screen. The cut-out goes through all layers, so the "43" always shows the page background,
   never a colour.
-- **Don't use live text for "43".** `Logo source.svg` uses live text in Adobe Garamond Pro Bold
-  Italic, embedded as an SVG font, which Chrome and Firefox don't support. `index.html` uses the
-  outlined paths instead.
+- **Don't replace the "43" with live text.** It's set in Adobe Garamond Pro Bold Italic, which
+  isn't a web font here. The outlined paths render the same everywhere and need no font license
+  for the web.
 
 ## Layer geometry
 
-Each `<use>` carries its anchor points as inline CSS custom properties, in viewBox units:
+Each layer `<path>` carries its anchor points as inline CSS custom properties, in viewBox units.
+Its initial `d` is the source heptagon, which is what shows without JS.
 
 | Layer (`--i`) | Colour | `--ex, --ey` (edge midpoint) | `--cx, --cy` (corner) |
 |---|---|---|---|
@@ -95,13 +94,16 @@ How the anchors relate to the shape:
 - **Layer order goes consecutively around the shape**, and the corner list is used in that order
   as the heptagon polygon in JS. Keep it consecutive if you reorder layers.
 
-The transform is plain CSS:
+**How a layer is drawn (`layerPath`).** Every frame, JS rebuilds each layer's `d`:
 
-```css
-transform-box: view-box;                  /* origin is in viewBox user units */
-transform-origin: var(--ex) var(--ey);    /* or var(--cx) var(--cy) when "Corners" is selected */
-transform: scale(var(--s, 1));            /* --s is written by JS every frame */
-```
+1. Scale the seven true corners about the layer's anchor.
+2. Re-round each corner with the **source's fixed corner radius**: the straight edges stop
+   `CORNER_TANGENT` (10 units) short of each true corner, which gives a radius of about 20.77.
+
+Because the radius doesn't scale with the layer, a corner-anchored layer matches the source
+exactly at its anchored corner at any scale. That's essential for the about overlay's huge scales.
+A CSS `scale()` transform would scale the rounding too, biting chunks out of the black's
+corners.
 
 **If the heptagon path ever changes, recompute these numbers:**
 1. Parse the path's straight segments (the `l`/`V` commands) to get the edge midpoints.
@@ -110,8 +112,9 @@ transform: scale(var(--s, 1));            /* --s is written by JS every frame */
 
 Known visual quirks, which were judged acceptable:
 
-- **The black's corners are slightly squarer than the source's rounded corners.** Scaled layers
-  round their corners further out, so the area where all seven overlap ends up a bit squarer.
+- **In edge-anchor mode, the black's corners are sharp.** Each layer only shares one edge line
+  with the source, so the overlap's corners come from two straight lines meeting. Corner mode
+  matches the source's rounded corners exactly.
 - **Just outside each edge there's a near-black band**, where six of the seven colours overlap.
   Pure multiply can't make all seven of those six-way overlaps bright, because there are only
   three colour channels. This was discussed, and the look was kept.
@@ -160,6 +163,22 @@ Each layer's target peak (`targetPeak`):
 works the same at any frame rate, and it smooths the explosion and mode switches. The revolve
 wave itself isn't eased.
 
+**About overlay.** Clicking the question-mark button sets `overlayOpen`. Over `OVERLAY_MS`
+(700ms, ease-in-out cubic), each layer's scale is interpolated, in log space, from its normal
+animated scale to `overlayScale()`. That's the scale at which the layer's unanchored edges are all
+beyond the viewport: the farthest viewport corner from the anchor, divided by how far the layer
+reaches before its first unanchored corner. That reach is an edge length in corner mode, or half
+an edge length in edge mode.
+
+The result: only the anchored edges stay on-screen, extending out from the black heptagon as
+lines between coloured areas. The cursor is ignored while the overlay is open. Clicking the
+button again, or pressing Escape, reverses it.
+
+The overlay's text, the bio and the social links, is `section.about`: white Sofia Pro 300 with 900
+for bold, centred on the page. JS sets its opacity from the same eased progress as the zoom. It
+fades in over the last 30% of opening, and fades out at the start of closing, before the "43"
+returns.
+
 **Modes.** "Non-interactive" uses the same loop and simply treats the cursor as absent, so it's
 identical to "Interactive" with no cursor on the page.
 
@@ -197,8 +216,8 @@ The page background is a warm off-white (`#fffefb`) with a static film grain. Th
 
 ## Dev control panel
 
-`.controls` is a fixed panel for tuning. It isn't part of the site, and it has to be removed or
-hidden before deploying (see below).
+`.controls` is a tuning panel that ships as an easter egg. The sliders button in the lower right
+toggles it with a short fade-and-slide (`is-open` class), and Escape closes it.
 
 - **Guides, Anchor and Layers** work in CSS only, using `body:has(#id:checked)` selectors.
   - The Layers checkboxes map to `.layers use:nth-child(n)`. If you add, remove or reorder
@@ -228,6 +247,20 @@ Tips:
 - **Check for errors** by searching stderr for `Uncaught`.
 - **Don't use `--virtual-time-budget`.** The animation never ends, so the run hangs.
 
+# Typography
+
+The site uses **Sofia Pro**, from the Adobe Fonts (Typekit) kit `amh2hdk`. It's the same kit as
+the `lab43/eusonic` site, loaded with
+`<link rel="stylesheet" href="https://use.typekit.net/amh2hdk.css">` and set on `body` as
+`font-family: sofia-pro, sans-serif`.
+
+- **Available styles:** 300, 300 italic, 400, 400 italic and 900. eusonic used 300 for light
+  text, 900 for headings and 400 for body. Other weights need adding to the kit on the Adobe
+  Fonts site first.
+- **Domains:** the kit doesn't block other sites, but Adobe's terms expect every site that uses
+  it to be listed in the kit's settings. Add `lab43.com` there.
+- **Dev control panel:** it deliberately uses `system-ui` instead.
+
 # Deployment
 
 The site is hosted on GitHub Pages from the `lab43/lab43` repo, at the custom domain `lab43.com`.
@@ -254,27 +287,20 @@ These steps change the live site. Do them together, and only when the new site i
 
 ## Still to do before going live
 
-1. **Bio and links content.**
-2. **Separate dev tooling from the shipped page.** Remove the `.controls` panel, the `.guide`
-   and `.zone` elements, and the settings wiring. Alternatively, keep them in a separate dev
-   page or behind a flag such as `?debug`. Production defaults stay in the CSS variables on
-   `.logo`.
-3. **Page layout.** Right now the logo fills a full-viewport `<header>`. Decide how the logo, bio
-   and links sit together, and how much room the explosion gets. Exploded layers currently go
-   off-screen and are clipped by the header.
-4. **Description text.** The meta description is a placeholder ("Lab 43 — web design and
+1. **The settings panel ships as an easter egg** (behind the sliders button). Decide whether
+   the Guides group (source outline, interactivity zone) stays in it.
+2. **Description text.** The meta description is a placeholder ("Lab 43 — web design and
    development."), taken from the old site's title. Replace it once the bio is written.
-5. **Accessibility and motion.** Honour `prefers-reduced-motion`, for example by stopping the
+3. **Accessibility and motion.** Honour `prefers-reduced-motion`, for example by stopping the
    revolve and holding at idle or a static logo.
-6. **Touch devices.** The effect is driven by `pointermove`. Taps and drags on touch screens will
+4. **Touch devices.** The effect is driven by `pointermove`. Taps and drags on touch screens will
    jump the "cursor" around and can trigger the explosion. Decide whether touch should be ignored
    (check `e.pointerType`) or get its own behaviour.
-7. **Performance.** The animation loop runs forever. Pause it when the logo is off-screen
+5. **Performance.** The animation loop runs forever. Pause it when the logo is off-screen
    (`IntersectionObserver`) or the tab is hidden.
-8. **Without JavaScript,** every layer sits at scale 1, which shows just the black heptagon and
+6. **Without JavaScript,** every layer sits at scale 1, which shows just the black heptagon and
    the "43". That's acceptable, but confirm it's the intended fallback.
-9. **Typography for the bio and links.** Choose the fonts: the old Typekit kit, a web font, or
-   system fonts.
+7. **Add `lab43.com` to the Adobe Fonts kit's domains** (see [Typography](#typography)).
 
 Deliberately left out for now:
 - Link-preview tags (Open Graph and Twitter cards).

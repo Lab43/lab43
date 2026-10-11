@@ -9,7 +9,8 @@ with an animated SVG logo, a short bio and some links, and no portfolio.
   root**, with a `CNAME` (`lab43.com`) and a `.nojekyll`.
 - **Don't change Pages settings or merge to `master` without the user's go-ahead.** Both change
   the live site. The go-live steps are in `README.md`.
-- **The logo works as a prototype.** The bio and the links aren't built yet.
+- **The bio and social links are in the about overlay** (`section.about`), revealed by the
+  question-mark button or by clicking the heptagon.
 - **Read `README.md` before changing the logo or the deployment.** It has the logo's geometry,
   the animation formulas, the settings table, the go-live steps, and the remaining to-do list.
 - **The working assumption is a static site with no build step,** served directly by GitHub
@@ -34,29 +35,37 @@ with an animated SVG logo, a short bio and some links, and no portfolio.
 
 ## Architecture
 
-- **The logo is a construction, not a drawing.** Seven `<use>` copies of `#heptagon` (the
-  source shape from `Logo source.svg`) are blended with `mix-blend-mode: multiply` inside an
-  isolated group.
+- **The logo is a construction, not a drawing.** Seven layer `<path>`s are blended with
+  `mix-blend-mode: multiply` inside an isolated group. Each is a copy of the source heptagon
+  (from the original Illustrator logo).
   - Each copy is scaled up about an anchor on the source's boundary: an edge midpoint
     (`--ex/--ey`) or a true corner (`--cx/--cy`).
+  - JS rebuilds each path's `d` every frame (`layerPath`). It scales the true corners, then
+    re-rounds them with the source's *fixed* corner radius, so anchored corners stay exact at any
+    scale. Don't switch back to CSS `scale()` transforms: they scale the rounding too.
   - Each copy covers the source and keeps its edges on the source's edge lines. The only area all
     seven overlap is the source heptagon, which multiplies to near-black.
 - **All coordinates are in the original 400×400 Illustrator space.**
   - The SVG `viewBox` is the heptagon's bounding box.
-  - `transform-box: view-box` makes `transform-origin` take those user units directly.
 - **One `requestAnimationFrame` loop (`tick`) drives both modes.**
   - Each frame it reads the CSS custom properties on `.logo` (`--cycle`, `--max-scale`,
     `--min-scale`, `--idle-scale`, `--threshold-scale`, `--zone-scale`).
   - It computes each layer's target peak from the cursor and eases toward it.
-  - It writes `--s` on each layer, and the CSS applies `scale(var(--s))`.
+  - It turns each layer's scale into path data with `layerPath`.
+  - The about overlay (the question-mark button) blends every layer toward `overlayScale()`, big
+    enough that only the anchored edges remain on-screen.
   - "Non-interactive" mode is the same loop with the cursor treated as absent. There's no
     separate CSS animation.
 - **The CSS variables on `.logo` are the source of truth for defaults.** The dev panel's
   Settings inputs only write temporary inline overrides on the SVG.
 - **The "43" is a mask cut-out (`#punch-43`), not a fill.** It shows the page background (warm
-  off-white plus an SVG `feTurbulence` grain in the `body` rule) through every layer. Use the
-  outlined paths in `#wordmark`. The live-text "43" in `Logo source.svg` uses an embedded SVG
-  font that browsers don't render.
+  off-white plus an SVG `feTurbulence` grain in the `body` rule) through every layer. Keep the
+  outlined paths in `#wordmark`; don't swap in live text (Adobe Garamond Pro Bold Italic isn't
+  available as a web font here).
+
+- **Text uses Sofia Pro** from the Adobe Fonts kit `amh2hdk` (`font-family: sofia-pro`). The
+  kit only has weights 300, 400 (each with an italic) and 900; other weights must be added to
+  the kit first.
 
 ## Invariants to preserve
 
@@ -65,11 +74,10 @@ with an animated SVG logo, a short bio and some links, and no portfolio.
 - **The Layers checkboxes map to `.layers use:nth-child(n)`.** Keep them in sync if layers change.
 - **Anchor values are precomputed from the heptagon path.** If the path changes, recompute the
   edge midpoints, the corners (intersections of adjacent edge lines) and the viewBox (`getBBox()`).
-- **The `.controls` panel and the `.guide`/`.zone` elements are dev tooling.** They must not ship
-  on the public site.
+- **The `.controls` settings panel ships as an easter egg** behind the sliders button in the
+  lower right. Its CSS-variable defaults on `.logo` are what visitors see.
 - **The repo root needs a `CNAME` file containing `lab43.com`.** Without it, the custom domain
   breaks.
-- **Every file in the repo root is published** (the repo is public), including the docs and the
-  `Logo *.svg` design sources.
+- **Every file in the repo root is published** (the repo is public), including the docs.
 - **`favicon.svg` and `favicon.ico` are generated from the heptagon and `#wordmark` paths** in
   `index.html`, with the "43" at 85%. Regenerate them if the logo shapes change.
