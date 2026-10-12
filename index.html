@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Lab 43</title>
 <meta name="description" content="Lab 43 — Cameron Spencer">
 <link rel="icon" href="favicon.ico" sizes="32x32">
@@ -17,6 +17,7 @@
   html,
   body {
     margin: 0;
+    overflow: hidden;
   }
 
   body {
@@ -35,7 +36,6 @@
     min-height: 100dvh;
     box-sizing: border-box;
     padding: 48px 16px;
-    overflow: clip;
   }
 
   .logo {
@@ -47,7 +47,7 @@
     --zone-scale: 2;
     --wordmark-scale: 0.85;
 
-    width: min(529px, 75vw);
+    width: min(529px, 75vw, 70dvh);
     height: auto;
     display: block;
     overflow: visible;
@@ -114,10 +114,22 @@
     inset: 0;
     display: flex;
     overflow-y: auto;
-    padding: 72px 24px;
-    pointer-events: none;
+    overscroll-behavior: contain;
+    padding:
+      calc(72px + env(safe-area-inset-top))
+      calc(24px + env(safe-area-inset-right))
+      calc(72px + env(safe-area-inset-bottom))
+      calc(24px + env(safe-area-inset-left));
     opacity: 0;
     visibility: hidden;
+  }
+
+  /* When the text column reaches the corner buttons, centre it in the space above them. */
+  @media (max-width: 800px) {
+    .about {
+      padding-top: calc(24px + env(safe-area-inset-top));
+      padding-bottom: calc(84px + env(safe-area-inset-bottom));
+    }
   }
 
   .about-content {
@@ -128,7 +140,6 @@
     font-size: clamp(18.75px, 1.875vw, 22.5px);
     font-weight: 300;
     line-height: 1.5;
-    pointer-events: auto;
   }
 
   .about-content p {
@@ -166,7 +177,7 @@
   .corner-button {
     position: fixed;
     z-index: 2;
-    bottom: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
     display: grid;
     place-items: center;
     width: 48px;
@@ -186,11 +197,11 @@
   }
 
   .about-toggle {
-    left: 12px;
+    left: calc(12px + env(safe-area-inset-left));
   }
 
   .controls-toggle {
-    right: 12px;
+    right: calc(12px + env(safe-area-inset-right));
   }
 
   .corner-button[aria-expanded="false"] .icon-close,
@@ -201,9 +212,9 @@
   .controls {
     position: fixed;
     z-index: 1;
-    right: 12px;
-    bottom: 68px;
-    max-height: calc(100vh - 80px);
+    right: calc(12px + env(safe-area-inset-right));
+    bottom: calc(68px + env(safe-area-inset-bottom));
+    max-height: calc(100dvh - 80px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     overflow: auto;
     background: rgb(255 255 255 / 0.85);
     border-radius: 6px;
@@ -446,10 +457,13 @@
     return d + 'Z';
   }
 
-  // Scale at which a layer's unanchored edges are all beyond the viewport.
+  // Scale at which a layer's unanchored edges are all beyond the viewport, padded so the colour
+  // also fills areas outside it, such as behind mobile browser toolbars and the status bar.
   function overlayScale(anchor, edgeMode) {
     const inverse = svg.getScreenCTM().inverse();
-    const far = Math.max(...[[0, 0], [innerWidth, 0], [0, innerHeight], [innerWidth, innerHeight]].map(([x, y]) => {
+    const padX = innerWidth * 0.15, padY = innerHeight * 0.25;
+    const corners = [[-padX, -padY], [innerWidth + padX, -padY], [-padX, innerHeight + padY], [innerWidth + padX, innerHeight + padY]];
+    const far = Math.max(...corners.map(([x, y]) => {
       const p = new DOMPoint(x, y).matrixTransform(inverse);
       return Math.hypot(p.x - anchor.x, p.y - anchor.y);
     }));
